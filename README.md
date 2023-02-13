@@ -1,5 +1,10 @@
 # ClipClopCam
 
+Tiktok camera game filters for desktop webcams using WebGL 
+
+[Try Me](https://delbertina.github.io/ClipClopCam/)
+#
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.1.4.
 
 ## Development server
