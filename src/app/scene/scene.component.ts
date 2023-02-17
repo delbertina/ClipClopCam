@@ -8,17 +8,38 @@ import { WebGLService } from "./services/web-gl.service";
 })
 export class SceneComponent implements OnInit, AfterViewInit {
   	
-  @ViewChild('sceneCanvas') private canvas: ElementRef | undefined;
+  @ViewChild('tempImgCanvas') private tempImgCanvas: ElementRef;
+  @ViewChild('sceneCanvas') private sceneCanvas: ElementRef;
+  @ViewChild('sceneVideo') private video: ElementRef;
 
-  ngAfterViewInit(): void {	
-    if (!this.canvas) {
-      alert("canvas not supplied! cannot bind WebGL context!");
-      return;
-    }
-    this.webglService.initialiseWebGLContext(this.canvas.nativeElement);
+  public captures: Array<any>;
+
+  constructor(private webglService: WebGLService) {
+    this.captures = [];
   }
 
-  constructor(private webglService: WebGLService) {}
-
   ngOnInit(): void {}  
+
+  ngAfterViewInit(): void {
+    // this.webglService.initialiseWebGLContext(this.canvas.nativeElement);
+    this.accessWebcam();
+  }
+
+  accessWebcam() {
+    if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+          this.video.nativeElement.srcObject = stream;
+          this.video.nativeElement.play();
+      });
+  }
+  }
+
+  capture() {
+    this.video.nativeElement.pause();
+    setTimeout(() => {
+      this.video.nativeElement.play();
+    }, 1000);
+    this.tempImgCanvas.nativeElement.getContext("2d").drawImage(this.video.nativeElement, 0, 0, 720, 405);
+    this.captures.push(this.tempImgCanvas.nativeElement.toDataURL("image/png"));
+  }
 }
