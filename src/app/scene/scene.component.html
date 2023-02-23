@@ -1,10 +1,4 @@
 <div class="scene">
-  <div><video #sceneVideo id="sceneVideo" width="720" height="405" autoplay></video></div>
-  <div><button id="snap" (click)="capture()">Snap Photo</button></div>
-  <canvas #tempImgCanvas id="sceneCanvas" width="720" height="405"></canvas>
-  <ul>
-    <li *ngFor="let c of captures">
-        <img src="{{ c }}" height="50" />
-    </li>
-</ul>
+  <video #sceneVideo id="sceneVideo" width="720" height="405" autoplay></video>
+  <canvas #sceneCanvas id="sceneCanvas" width="720" height="405"></canvas>
 </div>
