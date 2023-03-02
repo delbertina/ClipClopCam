@@ -3,3 +3,14 @@ html,
 body {
   height: 99%;
 }
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.header-row {
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}

@@ -5,15 +5,14 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { SceneRectLines, SCENE_STAGE } from '../types';
-import { WebGLService } from './services/web-gl.service';
+import { SCENE_STAGE, SceneRectLines } from 'src/app/types';
 
 @Component({
-  selector: 'app-scene',
+  selector: 'app-scene-v1',
   templateUrl: './scene.component.html',
   styleUrls: ['./scene.component.scss'],
 })
-export class SceneComponent implements OnInit, AfterViewInit {
+export class SceneV1Component implements OnInit, AfterViewInit {
   @ViewChild('sceneCanvas') private sceneCanvas: ElementRef;
   @ViewChild('sceneVideo') private video: ElementRef;
   width = 720;
@@ -26,14 +25,12 @@ export class SceneComponent implements OnInit, AfterViewInit {
 
   public captures: Array<any>;
 
-  constructor(private webglService: WebGLService) {
-    this.captures = [];
+  constructor() {
   }
 
   ngOnInit(): void {}
 
   ngAfterViewInit(): void {
-    // this.webglService.initialiseWebGLContext(this.canvas.nativeElement);
     this.accessWebcam();
   }
 

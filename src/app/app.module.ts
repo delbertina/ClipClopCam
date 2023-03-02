@@ -4,11 +4,13 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { SceneComponent } from './scene/scene.component';
 import { AppRoutingModule } from './app-routing.module';
+import { SceneV1Component } from './scene/v1/scene.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SceneComponent
+    SceneComponent,
+    SceneV1Component
   ],
   imports: [
     BrowserModule,
