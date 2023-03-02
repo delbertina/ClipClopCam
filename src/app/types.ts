@@ -6,6 +6,12 @@ export enum SCENE_STAGE {
     DISPLAY = 4
 }
 
+export interface SceneStage {
+    id: SCENE_STAGE,
+    name: string,
+    frames: number
+}
+
 export interface SceneRectLines {
     top: number;
     right: number;

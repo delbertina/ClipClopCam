@@ -3,4 +3,6 @@
   <video #sceneVideo id="sceneVideo" width="720" height="405" autoplay></video>
   <canvas #sceneCanvas id="sceneCanvas" width="720" height="405"></canvas>
   <div><button (click)="toggleMovement()">Toggle</button></div>
+  <div><h5>{{getCurrentStageObj | json}}</h5></div>
+  <div><h5>{{remainingStageFrames}}</h5></div>
 </div>
