@@ -1,8 +1,16 @@
 <div class="scene">
-  <div class="row header-row"><a><button disabled><</button></a><h3>Version 2</h3><a routerLink="/v1"><button>></button></a></div>
+  <div class="row header-row">
+    <a><button disabled><</button></a>
+    <h3>Version 3</h3>
+    <a routerLink="/v2"><button>></button></a>
+  </div>
   <video #sceneVideo id="sceneVideo" width="720" height="405" autoplay></video>
   <canvas #sceneCanvas id="sceneCanvas" width="720" height="405"></canvas>
   <div><button (click)="toggleMovement()">Toggle</button></div>
-  <div><h5>{{getCurrentStageObj | json}}</h5></div>
-  <div><h5>{{remainingStageFrames}}</h5></div>
+  <div>
+    <h5>{{ getCurrentStageObj | json }}</h5>
+  </div>
+  <div>
+    <h5>{{ remainingStageFrames }}</h5>
+  </div>
 </div>
