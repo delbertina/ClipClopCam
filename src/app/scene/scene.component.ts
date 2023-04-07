@@ -343,9 +343,39 @@ export class SceneComponent implements OnInit, AfterViewInit {
           // compute where to place for it to be centered
           const leftPad = (this.width - tempRectWidth) / 2;
           const topPad = (this.height - tempRectHeight) / 2;
-          //
-          // future work: resize image to fill space more
-          //
+          // resize image to fill space more
+          const minPad = 50;
+          let resizedRectWidth = tempRectWidth;
+          let resizedRectHeight = tempRectHeight;
+          let leftResizePad = leftPad;
+          let topResizePad = topPad;
+          // if we can resize
+          if (leftPad > minPad && topPad > minPad) {
+            const maxHeightResizeRatio =
+              (this.height - 2 * minPad) / tempRectHeight;
+            const maxWidthResizeRatio =
+              (this.width - 2 * minPad) / tempRectWidth;
+            // use the smallest ratio to not go over
+            if (maxHeightResizeRatio < maxWidthResizeRatio) {
+              resizedRectWidth *= maxHeightResizeRatio;
+              resizedRectHeight *= maxHeightResizeRatio;
+            } else {
+              resizedRectWidth *= maxWidthResizeRatio;
+              resizedRectHeight *= maxWidthResizeRatio;
+            }
+            leftResizePad = (this.width - resizedRectWidth) / 2;
+            topResizePad = (this.height - resizedRectHeight) / 2;
+            // if somehow we ended up with an invalid situation revert ... probably not needed
+            if (
+              resizedRectWidth + 2 * minPad > this.width ||
+              resizedRectHeight + 2 * minPad > this.height
+            ) {
+              resizedRectWidth = tempRectWidth;
+              resizedRectHeight = tempRectHeight;
+              leftResizePad = leftPad;
+              topResizePad = topPad;
+            }
+          }
           // make background black
           context.fillRect(0, 0, this.width, this.height);
           // arguments: source, top left coords to start capture, dimensions of capture,
@@ -356,10 +386,10 @@ export class SceneComponent implements OnInit, AfterViewInit {
             this.currentRectLines.top * this.resizeRatio,
             tempRectWidth * this.resizeRatio,
             tempRectHeight * this.resizeRatio,
-            leftPad,
-            topPad,
-            this.currentRectLines.right - this.currentRectLines.left,
-            this.currentRectLines.bottom - this.currentRectLines.top
+            leftResizePad,
+            topResizePad,
+            resizedRectWidth,
+            resizedRectHeight
           );
           return;
         }
