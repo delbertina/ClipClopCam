@@ -377,6 +377,7 @@ export class SceneComponent implements OnInit, AfterViewInit {
             }
           }
           // make background black
+          context.fillStyle = "black";
           context.fillRect(0, 0, this.width, this.height);
           // arguments: source, top left coords to start capture, dimensions of capture,
           //            top left coord to start paste, dimensions of paste
@@ -399,6 +400,27 @@ export class SceneComponent implements OnInit, AfterViewInit {
           targetRectObj.movedPixels / this.getCurrentStageObj.frames;
       }
       this.currentRectLines = this.getNextRect();
+      //
+      // Tint area not in selection
+      //
+      context.globalAlpha = 0.5;
+      context.fillStyle = "black";
+      // overlay the tint over the whole frame
+      context.fillRect(0, 0, this.width, this.height);
+      // copy selection so it's not tinted
+      context.drawImage(
+        this.video.nativeElement,
+        this.currentRectLines.left * this.resizeRatio,
+        this.currentRectLines.top * this.resizeRatio,
+        (this.currentRectLines.right - this.currentRectLines.left) * this.resizeRatio,
+        (this.currentRectLines.bottom - this.currentRectLines.top) * this.resizeRatio,
+        this.currentRectLines.left,
+        this.currentRectLines.top,
+        this.currentRectLines.right - this.currentRectLines.left,
+        this.currentRectLines.bottom - this.currentRectLines.top
+      );
+      // reset global alpha
+      context.globalAlpha = 1;
       //
       // Draw rectangles
       //
