@@ -402,7 +402,7 @@ export class SceneComponent implements OnInit, AfterViewInit {
       //
       // Draw rectangles
       //
-      const mainRectStroke = 2.5;
+      const mainRectStroke = 2;
       const secondaryRectStroke = 0.5;
       context.strokeStyle = 'white';
       const heightThird =
@@ -412,34 +412,33 @@ export class SceneComponent implements OnInit, AfterViewInit {
       // main rect
       context.beginPath();
       context.rect(
-        this.currentRectLines.left,
-        this.currentRectLines.top,
-        this.currentRectLines.right - this.currentRectLines.left,
-        this.currentRectLines.bottom - this.currentRectLines.top
+        Math.floor(this.currentRectLines.left),
+        Math.floor(this.currentRectLines.top),
+        Math.floor(this.currentRectLines.right - this.currentRectLines.left) + 1,
+        Math.floor(this.currentRectLines.bottom - this.currentRectLines.top) + 1
       );
       context.lineWidth = mainRectStroke;
       context.stroke();
       // inner rect 1
       context.beginPath();
       context.rect(
-        this.currentRectLines.left + widthThird,
-        this.currentRectLines.top,
-        widthThird,
-        this.currentRectLines.bottom - this.currentRectLines.top
+        Math.floor(this.currentRectLines.left + widthThird),
+        Math.floor(this.currentRectLines.top),
+        Math.floor(widthThird),
+        Math.floor(this.currentRectLines.bottom - this.currentRectLines.top)
       );
       context.lineWidth = secondaryRectStroke;
       context.stroke();
       // inner rect 2
       context.beginPath();
       context.rect(
-        this.currentRectLines.left,
-        this.currentRectLines.top + heightThird,
-        this.currentRectLines.right - this.currentRectLines.left,
-        heightThird
+        Math.floor(this.currentRectLines.left),
+        Math.floor(this.currentRectLines.top + heightThird),
+        Math.floor(this.currentRectLines.right - this.currentRectLines.left),
+        Math.floor(heightThird)
       );
       context.lineWidth = secondaryRectStroke;
       context.stroke();
-
       //
       // Make fancy corners
       //
@@ -449,50 +448,50 @@ export class SceneComponent implements OnInit, AfterViewInit {
       // top-left corner left rect
       context.fillStyle = 'white';
       context.fillRect(
-        this.currentRectLines.left - (cornerWidth + cornerOffset),
-        this.currentRectLines.top - cornerOffset,
+        Math.floor(this.currentRectLines.left - (cornerWidth + cornerOffset)),
+        Math.floor(this.currentRectLines.top - cornerOffset),
         cornerWidth, cornerLength
       );
       // top-left corner top rect
       context.fillRect(
-        this.currentRectLines.left - cornerOffset,
-        this.currentRectLines.top - (cornerWidth + cornerOffset),
+        Math.floor(this.currentRectLines.left - cornerOffset),
+        Math.floor(this.currentRectLines.top - (cornerWidth + cornerOffset)),
         cornerLength, cornerWidth
       );
       // top-right corner right rect
       context.fillRect(
-        this.currentRectLines.right + cornerOffset,
-        this.currentRectLines.top - cornerOffset,
+        Math.floor(this.currentRectLines.right + cornerOffset),
+        Math.floor(this.currentRectLines.top - cornerOffset),
         cornerWidth, cornerLength
       );
       // top-right corner top rect
       context.fillRect(
-        this.currentRectLines.right - (cornerLength - cornerOffset),
-        this.currentRectLines.top - (cornerWidth + cornerOffset),
+        Math.floor(this.currentRectLines.right - (cornerLength - cornerOffset)),
+        Math.floor(this.currentRectLines.top - (cornerWidth + cornerOffset)),
         cornerLength, cornerWidth
       );
       // bottom-left corner left rect
       context.fillRect(
-        this.currentRectLines.left - (cornerWidth + cornerOffset),
-        this.currentRectLines.bottom - (cornerLength - cornerOffset),
+        Math.floor(this.currentRectLines.left - (cornerWidth + cornerOffset)),
+        Math.floor(this.currentRectLines.bottom - (cornerLength - cornerOffset)),
         cornerWidth, cornerLength
       );
       // bottom-left corner bottom rect
       context.fillRect(
-        this.currentRectLines.left - cornerOffset,
-        this.currentRectLines.bottom + cornerOffset,
+        Math.floor(this.currentRectLines.left - cornerOffset),
+        Math.floor(this.currentRectLines.bottom + cornerOffset),
         cornerLength, cornerWidth
       );
       // bottom-right corner right rect
       context.fillRect(
-        this.currentRectLines.right + cornerOffset,
-        this.currentRectLines.bottom - (cornerLength - cornerOffset),
+        Math.floor(this.currentRectLines.right + cornerOffset),
+        Math.floor(this.currentRectLines.bottom - (cornerLength - cornerOffset)),
         cornerWidth, cornerLength
       );
       // bottom-right corner bottom rect
       context.fillRect(
-        this.currentRectLines.right - (cornerLength - cornerOffset),
-        this.currentRectLines.bottom + cornerOffset,
+        Math.floor(this.currentRectLines.right - (cornerLength - cornerOffset)),
+        Math.floor(this.currentRectLines.bottom + cornerOffset),
         cornerLength, cornerWidth
       );
       //
@@ -502,192 +501,192 @@ export class SceneComponent implements OnInit, AfterViewInit {
       // top-left left triangle
       context.beginPath();
       context.moveTo(
-        this.currentRectLines.left - (cornerWidth + cornerOffset),
-        this.currentRectLines.top + (cornerLength - cornerOffset)
+        Math.floor(this.currentRectLines.left - (cornerWidth + cornerOffset)),
+        Math.floor(this.currentRectLines.top + (cornerLength - cornerOffset))
       )
       context.lineTo(
-        this.currentRectLines.left - (cornerOffset),
-        this.currentRectLines.top + (cornerLength - cornerOffset)
+        Math.floor(this.currentRectLines.left - (cornerOffset)),
+        Math.floor(this.currentRectLines.top + (cornerLength - cornerOffset))
       );
       context.lineTo(
-        this.currentRectLines.left - (cornerOffset),
-        this.currentRectLines.top + (cornerLength + cornerOffset + cornerOffset)
+        Math.floor(this.currentRectLines.left - (cornerOffset)),
+        Math.floor(this.currentRectLines.top + (cornerLength + cornerOffset + cornerOffset))
       );
       context.closePath();
       context.fill();
       // top-left middle triangle
       context.beginPath();
       context.moveTo(
-        this.currentRectLines.left - (cornerWidth + cornerOffset),
-        this.currentRectLines.top - cornerOffset
+        Math.floor(this.currentRectLines.left - (cornerWidth + cornerOffset)),
+        Math.floor(this.currentRectLines.top - cornerOffset)
       )
       context.lineTo(
-        this.currentRectLines.left - cornerOffset,
-        this.currentRectLines.top - (cornerWidth + cornerOffset)
+        Math.floor(this.currentRectLines.left - cornerOffset),
+        Math.floor(this.currentRectLines.top - (cornerWidth + cornerOffset))
       );
       context.lineTo(
-        this.currentRectLines.left - cornerOffset,
-        this.currentRectLines.top - cornerOffset
+        Math.floor(this.currentRectLines.left - cornerOffset),
+        Math.floor(this.currentRectLines.top - cornerOffset)
       );
       context.closePath();
       context.fill();
       // top-left top triangle
       context.beginPath();
       context.moveTo(
-        this.currentRectLines.left + (cornerLength - cornerOffset),
-        this.currentRectLines.top - (cornerWidth + cornerOffset)
+        Math.floor(this.currentRectLines.left + (cornerLength - cornerOffset)),
+        Math.floor(this.currentRectLines.top - (cornerWidth + cornerOffset))
       )
       context.lineTo(
-        this.currentRectLines.left + (cornerLength - cornerOffset),
-        this.currentRectLines.top - (cornerOffset)
+        Math.floor(this.currentRectLines.left + (cornerLength - cornerOffset)),
+        Math.floor(this.currentRectLines.top - (cornerOffset))
       );
       context.lineTo(
-        this.currentRectLines.left + (cornerLength + cornerOffset + cornerOffset),
-        this.currentRectLines.top - (cornerOffset)
+        Math.floor(this.currentRectLines.left + (cornerLength + cornerOffset + cornerOffset)),
+        Math.floor(this.currentRectLines.top - (cornerOffset))
       );
       context.closePath();
       context.fill();
       // top-right right triangle
       context.beginPath();
       context.moveTo(
-        this.currentRectLines.right + (cornerWidth + cornerOffset),
-        this.currentRectLines.top + (cornerLength - cornerOffset)
+        Math.floor(this.currentRectLines.right + (cornerWidth + cornerOffset)),
+        Math.floor(this.currentRectLines.top + (cornerLength - cornerOffset))
       )
       context.lineTo(
-        this.currentRectLines.right + (cornerOffset),
-        this.currentRectLines.top + (cornerLength - cornerOffset)
+        Math.floor(this.currentRectLines.right + (cornerOffset)),
+        Math.floor(this.currentRectLines.top + (cornerLength - cornerOffset))
       );
       context.lineTo(
-        this.currentRectLines.right + (cornerOffset),
-        this.currentRectLines.top + (cornerLength + cornerOffset + cornerOffset)
+        Math.floor(this.currentRectLines.right + (cornerOffset)),
+        Math.floor(this.currentRectLines.top + (cornerLength + cornerOffset + cornerOffset))
       );
       context.closePath();
       context.fill();
       // top-right middle triangle
       context.beginPath();
       context.moveTo(
-        this.currentRectLines.right + (cornerWidth + cornerOffset),
-        this.currentRectLines.top - cornerOffset
+        Math.floor(this.currentRectLines.right + (cornerWidth + cornerOffset)),
+        Math.floor(this.currentRectLines.top - cornerOffset)
       )
       context.lineTo(
-        this.currentRectLines.right + cornerOffset,
-        this.currentRectLines.top - (cornerWidth + cornerOffset)
+        Math.floor(this.currentRectLines.right + cornerOffset),
+        Math.floor(this.currentRectLines.top - (cornerWidth + cornerOffset))
       );
       context.lineTo(
-        this.currentRectLines.right + cornerOffset,
-        this.currentRectLines.top - cornerOffset
+        Math.floor(this.currentRectLines.right + cornerOffset),
+        Math.floor(this.currentRectLines.top - cornerOffset)
       );
       context.closePath();
       context.fill();
       // top-right top triangle
       context.beginPath();
       context.moveTo(
-        this.currentRectLines.right - (cornerLength - cornerOffset),
-        this.currentRectLines.top - (cornerWidth + cornerOffset)
+        Math.floor(this.currentRectLines.right - (cornerLength - cornerOffset)),
+        Math.floor(this.currentRectLines.top - (cornerWidth + cornerOffset))
       )
       context.lineTo(
-        this.currentRectLines.right - (cornerLength - cornerOffset),
-        this.currentRectLines.top - (cornerOffset)
+        Math.floor(this.currentRectLines.right - (cornerLength - cornerOffset)),
+        Math.floor(this.currentRectLines.top - (cornerOffset))
       );
       context.lineTo(
-        this.currentRectLines.right - (cornerLength + cornerOffset + cornerOffset),
-        this.currentRectLines.top - (cornerOffset)
+        Math.floor(this.currentRectLines.right - (cornerLength + cornerOffset + cornerOffset)),
+        Math.floor(this.currentRectLines.top - (cornerOffset))
       );
       context.closePath();
       context.fill();
       // bottom-left left triangle
       context.beginPath();
       context.moveTo(
-        this.currentRectLines.left - (cornerWidth + cornerOffset),
-        this.currentRectLines.bottom - (cornerLength - cornerOffset)
+        Math.floor(this.currentRectLines.left - (cornerWidth + cornerOffset)),
+        Math.floor(this.currentRectLines.bottom - (cornerLength - cornerOffset))
       )
       context.lineTo(
-        this.currentRectLines.left - (cornerOffset),
-        this.currentRectLines.bottom - (cornerLength - cornerOffset)
+        Math.floor(this.currentRectLines.left - (cornerOffset)),
+        Math.floor(this.currentRectLines.bottom - (cornerLength - cornerOffset))
       );
       context.lineTo(
-        this.currentRectLines.left - (cornerOffset),
-        this.currentRectLines.bottom - (cornerLength + cornerOffset + cornerOffset)
+        Math.floor(this.currentRectLines.left - (cornerOffset)),
+        Math.floor(this.currentRectLines.bottom - (cornerLength + cornerOffset + cornerOffset))
       );
       context.closePath();
       context.fill();
       // bottom-left middle triangle
       context.beginPath();
       context.moveTo(
-        this.currentRectLines.left - (cornerWidth + cornerOffset),
-        this.currentRectLines.bottom + cornerOffset
+        Math.floor(this.currentRectLines.left - (cornerWidth + cornerOffset)),
+        Math.floor(this.currentRectLines.bottom + cornerOffset)
       )
       context.lineTo(
-        this.currentRectLines.left - cornerOffset,
-        this.currentRectLines.bottom + (cornerWidth + cornerOffset)
+        Math.floor(this.currentRectLines.left - cornerOffset),
+        Math.floor(this.currentRectLines.bottom + (cornerWidth + cornerOffset))
       );
       context.lineTo(
-        this.currentRectLines.left - cornerOffset,
-        this.currentRectLines.bottom + cornerOffset
+        Math.floor(this.currentRectLines.left - cornerOffset),
+        Math.floor(this.currentRectLines.bottom + cornerOffset)
       );
       context.closePath();
       context.fill();
       // bottom-left bottom triangle
       context.beginPath();
       context.moveTo(
-        this.currentRectLines.left + (cornerLength - cornerOffset),
-        this.currentRectLines.bottom + (cornerWidth + cornerOffset)
+        Math.floor(this.currentRectLines.left + (cornerLength - cornerOffset)),
+        Math.floor(this.currentRectLines.bottom + (cornerWidth + cornerOffset))
       )
       context.lineTo(
-        this.currentRectLines.left + (cornerLength - cornerOffset),
-        this.currentRectLines.bottom + (cornerOffset)
+        Math.floor(this.currentRectLines.left + (cornerLength - cornerOffset)),
+        Math.floor(this.currentRectLines.bottom + (cornerOffset))
       );
       context.lineTo(
-        this.currentRectLines.left + (cornerLength + cornerOffset + cornerOffset),
-        this.currentRectLines.bottom + (cornerOffset)
+        Math.floor(this.currentRectLines.left + (cornerLength + cornerOffset + cornerOffset)),
+        Math.floor(this.currentRectLines.bottom + (cornerOffset))
       );
       context.closePath();
       context.fill();
       // bottom-right right triangle
       context.beginPath();
       context.moveTo(
-        this.currentRectLines.right + (cornerWidth + cornerOffset),
-        this.currentRectLines.bottom - (cornerLength - cornerOffset)
+        Math.floor(this.currentRectLines.right + (cornerWidth + cornerOffset)),
+        Math.floor(this.currentRectLines.bottom - (cornerLength - cornerOffset))
       )
       context.lineTo(
-        this.currentRectLines.right + (cornerOffset),
-        this.currentRectLines.bottom - (cornerLength - cornerOffset)
+        Math.floor(this.currentRectLines.right + (cornerOffset)),
+        Math.floor(this.currentRectLines.bottom - (cornerLength - cornerOffset))
       );
       context.lineTo(
-        this.currentRectLines.right + (cornerOffset),
-        this.currentRectLines.bottom - (cornerLength + cornerOffset + cornerOffset)
+        Math.floor(this.currentRectLines.right + (cornerOffset)),
+        Math.floor(this.currentRectLines.bottom - (cornerLength + cornerOffset + cornerOffset))
       );
       context.closePath();
       context.fill();
       // bottom-right middle triangle
       context.beginPath();
       context.moveTo(
-        this.currentRectLines.right + (cornerWidth + cornerOffset),
-        this.currentRectLines.bottom + cornerOffset
+        Math.floor(this.currentRectLines.right + (cornerWidth + cornerOffset)),
+        Math.floor(this.currentRectLines.bottom + cornerOffset)
       )
       context.lineTo(
-        this.currentRectLines.right + cornerOffset,
-        this.currentRectLines.bottom + (cornerWidth + cornerOffset)
+        Math.floor(this.currentRectLines.right + cornerOffset),
+        Math.floor(this.currentRectLines.bottom + (cornerWidth + cornerOffset))
       );
       context.lineTo(
-        this.currentRectLines.right + cornerOffset,
-        this.currentRectLines.bottom + cornerOffset
+        Math.floor(this.currentRectLines.right + cornerOffset),
+        Math.floor(this.currentRectLines.bottom + cornerOffset)
       );
       context.closePath();
       context.fill();
       // bottom-right bottom triangle
       context.beginPath();
       context.moveTo(
-        this.currentRectLines.right - (cornerLength - cornerOffset),
-        this.currentRectLines.bottom + (cornerWidth + cornerOffset)
+        Math.floor(this.currentRectLines.right - (cornerLength - cornerOffset)),
+        Math.floor(this.currentRectLines.bottom + (cornerWidth + cornerOffset))
       )
       context.lineTo(
-        this.currentRectLines.right - (cornerLength - cornerOffset),
-        this.currentRectLines.bottom + (cornerOffset)
+        Math.floor(this.currentRectLines.right - (cornerLength - cornerOffset)),
+        Math.floor(this.currentRectLines.bottom + (cornerOffset))
       );
       context.lineTo(
-        this.currentRectLines.right - (cornerLength + cornerOffset + cornerOffset),
-        this.currentRectLines.bottom + (cornerOffset)
+        Math.floor(this.currentRectLines.right - (cornerLength + cornerOffset + cornerOffset)),
+        Math.floor(this.currentRectLines.bottom + (cornerOffset))
       );
       context.closePath();
       context.fill();
