@@ -46,7 +46,7 @@ export class SceneComponent implements OnInit, AfterViewInit {
     this.accessWebcam();
   }
 
-  accessWebcam() {
+  private accessWebcam() {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
         this.resizeRatio =
@@ -59,7 +59,7 @@ export class SceneComponent implements OnInit, AfterViewInit {
     }
   }
 
-  timerCallback() {
+  private timerCallback() {
     if (this.video.nativeElement.paused || this.video.nativeElement.ended) {
       return;
     }
@@ -69,7 +69,7 @@ export class SceneComponent implements OnInit, AfterViewInit {
     }, 0);
   }
 
-  toggleMovement() {
+  public toggleMovement() {
     this.currentStage =
       this.currentStage === SCENE_STAGE.PAUSED
         ? SCENE_STAGE.FIRST_MOVE
@@ -81,7 +81,7 @@ export class SceneComponent implements OnInit, AfterViewInit {
     this.rectSpeed = newRectObj.movedPixels / this.getCurrentStageObj.frames;
   }
 
-  getNewTargetRect(): SceneRectLines {
+  private getNewTargetRect(): SceneRectLines {
     let tempReturn = { top: 0, right: 0, bottom: 0, left: 0 };
 
     const originY = Math.random() * (this.height - 200) + 100;
@@ -107,7 +107,7 @@ export class SceneComponent implements OnInit, AfterViewInit {
     return tempReturn;
   }
 
-  getMovementTargetRect(current: SceneRectLines): {
+  private getMovementTargetRect(current: SceneRectLines): {
     rect: SceneRectLines;
     movedPixels: number;
   } {
@@ -242,14 +242,14 @@ export class SceneComponent implements OnInit, AfterViewInit {
     }
   }
 
-  get getCurrentStageObj(): SceneStage {
+  public get getCurrentStageObj(): SceneStage {
     return (
       this.sceneStages.find((stage) => stage.id === this.currentStage) ??
       this.sceneStages[0]
     );
   }
 
-  getNextRect(): SceneRectLines {
+  private getNextRect(): SceneRectLines {
     let tempReturn = { top: 0, right: 0, bottom: 0, left: 0 };
 
     const moveToDoTop = this.targetRectLines.top - this.currentRectLines.top;
@@ -296,25 +296,22 @@ export class SceneComponent implements OnInit, AfterViewInit {
     return tempReturn;
   }
 
-  get isRectAtTarget(): boolean {
-    if (
+  private get isRectAtTarget(): boolean {
+    // return true if all lines match
+    return (
       this.currentRectLines.top === this.targetRectLines.top &&
       this.currentRectLines.right === this.targetRectLines.right &&
       this.currentRectLines.bottom === this.targetRectLines.bottom &&
       this.currentRectLines.left === this.targetRectLines.left
-    ) {
-      return true;
-    } else {
-      return false;
-    }
+    );
   }
 
-  getNextStage(): number {
+  private getNextStage(): number {
     // go to next stage, but skip paused
     return (this.currentStage + 1) % this.sceneStages.length || 1;
   }
 
-  computeFrame(): void {
+  private computeFrame(): void {
     // If we're still doing the display stage, don't change the picture
     if (
       this.currentStage === SCENE_STAGE.DISPLAY &&
@@ -323,75 +320,24 @@ export class SceneComponent implements OnInit, AfterViewInit {
       this.remainingStageFrames -= 1;
       return;
     }
-    const context = this.sceneCanvas.nativeElement.getContext('2d');
+    // else get our current render and draw on the webcam's current frame
+    const context: CanvasRenderingContext2D =
+      this.sceneCanvas.nativeElement.getContext('2d');
     context.drawImage(this.video.nativeElement, 0, 0, this.width, this.height);
 
     // if the rectangle is moving, advance the movement
     if (this.currentStage !== SCENE_STAGE.PAUSED) {
       this.remainingStageFrames -= 1;
+      // if we're done with the current movement
       if (this.isRectAtTarget) {
+        // advance to the next stage
         this.currentStage = this.getNextStage();
         this.remainingStageFrames = this.getCurrentStageObj.frames;
         // if the stage changed to paused, don't do anything
         if (this.currentStage === SCENE_STAGE.PAUSED) return;
+        // if we advanced to the display stage do the special render and nothing else
         if (this.currentStage === SCENE_STAGE.DISPLAY) {
-          // compute the size
-          const tempRectWidth =
-            this.currentRectLines.right - this.currentRectLines.left;
-          const tempRectHeight =
-            this.currentRectLines.bottom - this.currentRectLines.top;
-          // compute where to place for it to be centered
-          const leftPad = (this.width - tempRectWidth) / 2;
-          const topPad = (this.height - tempRectHeight) / 2;
-          // resize image to fill space more
-          const minPad = 50;
-          let resizedRectWidth = tempRectWidth;
-          let resizedRectHeight = tempRectHeight;
-          let leftResizePad = leftPad;
-          let topResizePad = topPad;
-          // if we can resize
-          if (leftPad > minPad && topPad > minPad) {
-            const maxHeightResizeRatio =
-              (this.height - 2 * minPad) / tempRectHeight;
-            const maxWidthResizeRatio =
-              (this.width - 2 * minPad) / tempRectWidth;
-            // use the smallest ratio to not go over
-            if (maxHeightResizeRatio < maxWidthResizeRatio) {
-              resizedRectWidth *= maxHeightResizeRatio;
-              resizedRectHeight *= maxHeightResizeRatio;
-            } else {
-              resizedRectWidth *= maxWidthResizeRatio;
-              resizedRectHeight *= maxWidthResizeRatio;
-            }
-            leftResizePad = (this.width - resizedRectWidth) / 2;
-            topResizePad = (this.height - resizedRectHeight) / 2;
-            // if somehow we ended up with an invalid situation revert ... probably not needed
-            if (
-              resizedRectWidth + 2 * minPad > this.width ||
-              resizedRectHeight + 2 * minPad > this.height
-            ) {
-              resizedRectWidth = tempRectWidth;
-              resizedRectHeight = tempRectHeight;
-              leftResizePad = leftPad;
-              topResizePad = topPad;
-            }
-          }
-          // make background black
-          context.fillStyle = "black";
-          context.fillRect(0, 0, this.width, this.height);
-          // arguments: source, top left coords to start capture, dimensions of capture,
-          //            top left coord to start paste, dimensions of paste
-          context.drawImage(
-            this.video.nativeElement,
-            this.currentRectLines.left * this.resizeRatio,
-            this.currentRectLines.top * this.resizeRatio,
-            tempRectWidth * this.resizeRatio,
-            tempRectHeight * this.resizeRatio,
-            leftResizePad,
-            topResizePad,
-            resizedRectWidth,
-            resizedRectHeight
-          );
+          this.drawDisplayStage(context);
           return;
         }
         const targetRectObj = this.getMovementTargetRect(this.currentRectLines);
@@ -399,319 +345,462 @@ export class SceneComponent implements OnInit, AfterViewInit {
         this.rectSpeed =
           targetRectObj.movedPixels / this.getCurrentStageObj.frames;
       }
+      // Get the next frame
       this.currentRectLines = this.getNextRect();
       //
+      // Draw current selection
+      //
       // Tint area not in selection
-      //
-      context.globalAlpha = 0.5;
-      context.fillStyle = "black";
-      // overlay the tint over the whole frame
-      context.fillRect(0, 0, this.width, this.height);
-      // copy selection so it's not tinted
-      context.drawImage(
-        this.video.nativeElement,
-        this.currentRectLines.left * this.resizeRatio,
-        this.currentRectLines.top * this.resizeRatio,
-        (this.currentRectLines.right - this.currentRectLines.left) * this.resizeRatio,
-        (this.currentRectLines.bottom - this.currentRectLines.top) * this.resizeRatio,
-        this.currentRectLines.left,
-        this.currentRectLines.top,
-        this.currentRectLines.right - this.currentRectLines.left,
-        this.currentRectLines.bottom - this.currentRectLines.top
+      this.drawTintAroundSelection(context);
+      // Draw selection rectangles
+      const mainRectWidth = 2;
+      const secondaryRectWidth = 0.5;
+      this.drawSelectionMainRectangles(
+        context,
+        'white',
+        'white',
+        mainRectWidth,
+        secondaryRectWidth
       );
-      // reset global alpha
-      context.globalAlpha = 1;
-      //
-      // Draw rectangles
-      //
-      const mainRectStroke = 2;
-      const secondaryRectStroke = 0.5;
-      context.strokeStyle = 'white';
-      const heightThird =
-        (this.currentRectLines.bottom - this.currentRectLines.top) / 3;
-      const widthThird =
-        (this.currentRectLines.right - this.currentRectLines.left) / 3;
-      // main rect
-      context.beginPath();
-      context.rect(
-        Math.floor(this.currentRectLines.left),
-        Math.floor(this.currentRectLines.top),
-        Math.floor(this.currentRectLines.right - this.currentRectLines.left) + 1,
-        Math.floor(this.currentRectLines.bottom - this.currentRectLines.top) + 1
-      );
-      context.lineWidth = mainRectStroke;
-      context.stroke();
-      // inner rect 1
-      context.beginPath();
-      context.rect(
-        Math.floor(this.currentRectLines.left + widthThird),
-        Math.floor(this.currentRectLines.top),
-        Math.floor(widthThird),
-        Math.floor(this.currentRectLines.bottom - this.currentRectLines.top)
-      );
-      context.lineWidth = secondaryRectStroke;
-      context.stroke();
-      // inner rect 2
-      context.beginPath();
-      context.rect(
-        Math.floor(this.currentRectLines.left),
-        Math.floor(this.currentRectLines.top + heightThird),
-        Math.floor(this.currentRectLines.right - this.currentRectLines.left),
-        Math.floor(heightThird)
-      );
-      context.lineWidth = secondaryRectStroke;
-      context.stroke();
-      //
       // Make fancy corners
-      //
-      const cornerOffset = mainRectStroke / 2;
+      const cornerOffset = mainRectWidth / 2;
       const cornerWidth = 5;
       const cornerLength = 20;
-      // top-left corner left rect
-      context.fillStyle = 'white';
-      context.fillRect(
-        Math.floor(this.currentRectLines.left - (cornerWidth + cornerOffset)),
-        Math.floor(this.currentRectLines.top - cornerOffset),
-        cornerWidth, cornerLength
+      this.drawSelectionCornerRectangles(
+        context,
+        cornerWidth,
+        cornerLength,
+        cornerOffset,
+        'white'
       );
-      // top-left corner top rect
-      context.fillRect(
-        Math.floor(this.currentRectLines.left - cornerOffset),
-        Math.floor(this.currentRectLines.top - (cornerWidth + cornerOffset)),
-        cornerLength, cornerWidth
+      this.drawSelectionCornerTriangles(
+        context,
+        cornerWidth,
+        cornerLength,
+        cornerOffset,
+        'white'
       );
-      // top-right corner right rect
-      context.fillRect(
-        Math.floor(this.currentRectLines.right + cornerOffset),
-        Math.floor(this.currentRectLines.top - cornerOffset),
-        cornerWidth, cornerLength
-      );
-      // top-right corner top rect
-      context.fillRect(
-        Math.floor(this.currentRectLines.right - (cornerLength - cornerOffset)),
-        Math.floor(this.currentRectLines.top - (cornerWidth + cornerOffset)),
-        cornerLength, cornerWidth
-      );
-      // bottom-left corner left rect
-      context.fillRect(
-        Math.floor(this.currentRectLines.left - (cornerWidth + cornerOffset)),
-        Math.floor(this.currentRectLines.bottom - (cornerLength - cornerOffset)),
-        cornerWidth, cornerLength
-      );
-      // bottom-left corner bottom rect
-      context.fillRect(
-        Math.floor(this.currentRectLines.left - cornerOffset),
-        Math.floor(this.currentRectLines.bottom + cornerOffset),
-        cornerLength, cornerWidth
-      );
-      // bottom-right corner right rect
-      context.fillRect(
-        Math.floor(this.currentRectLines.right + cornerOffset),
-        Math.floor(this.currentRectLines.bottom - (cornerLength - cornerOffset)),
-        cornerWidth, cornerLength
-      );
-      // bottom-right corner bottom rect
-      context.fillRect(
-        Math.floor(this.currentRectLines.right - (cornerLength - cornerOffset)),
-        Math.floor(this.currentRectLines.bottom + cornerOffset),
-        cornerLength, cornerWidth
-      );
-      //
-      // Add triangles
-      //
-      context.fillStyle = 'white'
-      // top-left left triangle
-      context.beginPath();
-      context.moveTo(
-        Math.floor(this.currentRectLines.left - (cornerWidth + cornerOffset)),
-        Math.floor(this.currentRectLines.top + (cornerLength - cornerOffset))
-      )
-      context.lineTo(
-        Math.floor(this.currentRectLines.left - (cornerOffset)),
-        Math.floor(this.currentRectLines.top + (cornerLength - cornerOffset))
-      );
-      context.lineTo(
-        Math.floor(this.currentRectLines.left - (cornerOffset)),
-        Math.floor(this.currentRectLines.top + (cornerLength + cornerOffset + cornerOffset))
-      );
-      context.closePath();
-      context.fill();
-      // top-left middle triangle
-      context.beginPath();
-      context.moveTo(
-        Math.floor(this.currentRectLines.left - (cornerWidth + cornerOffset)),
-        Math.floor(this.currentRectLines.top - cornerOffset)
-      )
-      context.lineTo(
-        Math.floor(this.currentRectLines.left - cornerOffset),
-        Math.floor(this.currentRectLines.top - (cornerWidth + cornerOffset))
-      );
-      context.lineTo(
-        Math.floor(this.currentRectLines.left - cornerOffset),
-        Math.floor(this.currentRectLines.top - cornerOffset)
-      );
-      context.closePath();
-      context.fill();
-      // top-left top triangle
-      context.beginPath();
-      context.moveTo(
-        Math.floor(this.currentRectLines.left + (cornerLength - cornerOffset)),
-        Math.floor(this.currentRectLines.top - (cornerWidth + cornerOffset))
-      )
-      context.lineTo(
-        Math.floor(this.currentRectLines.left + (cornerLength - cornerOffset)),
-        Math.floor(this.currentRectLines.top - (cornerOffset))
-      );
-      context.lineTo(
-        Math.floor(this.currentRectLines.left + (cornerLength + cornerOffset + cornerOffset)),
-        Math.floor(this.currentRectLines.top - (cornerOffset))
-      );
-      context.closePath();
-      context.fill();
-      // top-right right triangle
-      context.beginPath();
-      context.moveTo(
-        Math.floor(this.currentRectLines.right + (cornerWidth + cornerOffset)),
-        Math.floor(this.currentRectLines.top + (cornerLength - cornerOffset))
-      )
-      context.lineTo(
-        Math.floor(this.currentRectLines.right + (cornerOffset)),
-        Math.floor(this.currentRectLines.top + (cornerLength - cornerOffset))
-      );
-      context.lineTo(
-        Math.floor(this.currentRectLines.right + (cornerOffset)),
-        Math.floor(this.currentRectLines.top + (cornerLength + cornerOffset + cornerOffset))
-      );
-      context.closePath();
-      context.fill();
-      // top-right middle triangle
-      context.beginPath();
-      context.moveTo(
-        Math.floor(this.currentRectLines.right + (cornerWidth + cornerOffset)),
-        Math.floor(this.currentRectLines.top - cornerOffset)
-      )
-      context.lineTo(
-        Math.floor(this.currentRectLines.right + cornerOffset),
-        Math.floor(this.currentRectLines.top - (cornerWidth + cornerOffset))
-      );
-      context.lineTo(
-        Math.floor(this.currentRectLines.right + cornerOffset),
-        Math.floor(this.currentRectLines.top - cornerOffset)
-      );
-      context.closePath();
-      context.fill();
-      // top-right top triangle
-      context.beginPath();
-      context.moveTo(
-        Math.floor(this.currentRectLines.right - (cornerLength - cornerOffset)),
-        Math.floor(this.currentRectLines.top - (cornerWidth + cornerOffset))
-      )
-      context.lineTo(
-        Math.floor(this.currentRectLines.right - (cornerLength - cornerOffset)),
-        Math.floor(this.currentRectLines.top - (cornerOffset))
-      );
-      context.lineTo(
-        Math.floor(this.currentRectLines.right - (cornerLength + cornerOffset + cornerOffset)),
-        Math.floor(this.currentRectLines.top - (cornerOffset))
-      );
-      context.closePath();
-      context.fill();
-      // bottom-left left triangle
-      context.beginPath();
-      context.moveTo(
-        Math.floor(this.currentRectLines.left - (cornerWidth + cornerOffset)),
-        Math.floor(this.currentRectLines.bottom - (cornerLength - cornerOffset))
-      )
-      context.lineTo(
-        Math.floor(this.currentRectLines.left - (cornerOffset)),
-        Math.floor(this.currentRectLines.bottom - (cornerLength - cornerOffset))
-      );
-      context.lineTo(
-        Math.floor(this.currentRectLines.left - (cornerOffset)),
-        Math.floor(this.currentRectLines.bottom - (cornerLength + cornerOffset + cornerOffset))
-      );
-      context.closePath();
-      context.fill();
-      // bottom-left middle triangle
-      context.beginPath();
-      context.moveTo(
-        Math.floor(this.currentRectLines.left - (cornerWidth + cornerOffset)),
-        Math.floor(this.currentRectLines.bottom + cornerOffset)
-      )
-      context.lineTo(
-        Math.floor(this.currentRectLines.left - cornerOffset),
-        Math.floor(this.currentRectLines.bottom + (cornerWidth + cornerOffset))
-      );
-      context.lineTo(
-        Math.floor(this.currentRectLines.left - cornerOffset),
-        Math.floor(this.currentRectLines.bottom + cornerOffset)
-      );
-      context.closePath();
-      context.fill();
-      // bottom-left bottom triangle
-      context.beginPath();
-      context.moveTo(
-        Math.floor(this.currentRectLines.left + (cornerLength - cornerOffset)),
-        Math.floor(this.currentRectLines.bottom + (cornerWidth + cornerOffset))
-      )
-      context.lineTo(
-        Math.floor(this.currentRectLines.left + (cornerLength - cornerOffset)),
-        Math.floor(this.currentRectLines.bottom + (cornerOffset))
-      );
-      context.lineTo(
-        Math.floor(this.currentRectLines.left + (cornerLength + cornerOffset + cornerOffset)),
-        Math.floor(this.currentRectLines.bottom + (cornerOffset))
-      );
-      context.closePath();
-      context.fill();
-      // bottom-right right triangle
-      context.beginPath();
-      context.moveTo(
-        Math.floor(this.currentRectLines.right + (cornerWidth + cornerOffset)),
-        Math.floor(this.currentRectLines.bottom - (cornerLength - cornerOffset))
-      )
-      context.lineTo(
-        Math.floor(this.currentRectLines.right + (cornerOffset)),
-        Math.floor(this.currentRectLines.bottom - (cornerLength - cornerOffset))
-      );
-      context.lineTo(
-        Math.floor(this.currentRectLines.right + (cornerOffset)),
-        Math.floor(this.currentRectLines.bottom - (cornerLength + cornerOffset + cornerOffset))
-      );
-      context.closePath();
-      context.fill();
-      // bottom-right middle triangle
-      context.beginPath();
-      context.moveTo(
-        Math.floor(this.currentRectLines.right + (cornerWidth + cornerOffset)),
-        Math.floor(this.currentRectLines.bottom + cornerOffset)
-      )
-      context.lineTo(
-        Math.floor(this.currentRectLines.right + cornerOffset),
-        Math.floor(this.currentRectLines.bottom + (cornerWidth + cornerOffset))
-      );
-      context.lineTo(
-        Math.floor(this.currentRectLines.right + cornerOffset),
-        Math.floor(this.currentRectLines.bottom + cornerOffset)
-      );
-      context.closePath();
-      context.fill();
-      // bottom-right bottom triangle
-      context.beginPath();
-      context.moveTo(
-        Math.floor(this.currentRectLines.right - (cornerLength - cornerOffset)),
-        Math.floor(this.currentRectLines.bottom + (cornerWidth + cornerOffset))
-      )
-      context.lineTo(
-        Math.floor(this.currentRectLines.right - (cornerLength - cornerOffset)),
-        Math.floor(this.currentRectLines.bottom + (cornerOffset))
-      );
-      context.lineTo(
-        Math.floor(this.currentRectLines.right - (cornerLength + cornerOffset + cornerOffset)),
-        Math.floor(this.currentRectLines.bottom + (cornerOffset))
-      );
-      context.closePath();
-      context.fill();
     }
+  }
+
+  private drawDisplayStage(context: CanvasRenderingContext2D): void {
+    // compute the size
+    const tempRectWidth =
+      this.currentRectLines.right - this.currentRectLines.left;
+    const tempRectHeight =
+      this.currentRectLines.bottom - this.currentRectLines.top;
+    // compute where to place for it to be centered
+    const leftPad = (this.width - tempRectWidth) / 2;
+    const topPad = (this.height - tempRectHeight) / 2;
+    // resize image to fill space more
+    const minPad = 50;
+    let resizedRectWidth = tempRectWidth;
+    let resizedRectHeight = tempRectHeight;
+    let leftResizePad = leftPad;
+    let topResizePad = topPad;
+    // if we can resize
+    if (leftPad > minPad && topPad > minPad) {
+      const maxHeightResizeRatio = (this.height - 2 * minPad) / tempRectHeight;
+      const maxWidthResizeRatio = (this.width - 2 * minPad) / tempRectWidth;
+      // use the smallest ratio to not go over
+      if (maxHeightResizeRatio < maxWidthResizeRatio) {
+        resizedRectWidth *= maxHeightResizeRatio;
+        resizedRectHeight *= maxHeightResizeRatio;
+      } else {
+        resizedRectWidth *= maxWidthResizeRatio;
+        resizedRectHeight *= maxWidthResizeRatio;
+      }
+      leftResizePad = (this.width - resizedRectWidth) / 2;
+      topResizePad = (this.height - resizedRectHeight) / 2;
+      // if somehow we ended up with an invalid situation revert ... probably not needed
+      if (
+        resizedRectWidth + 2 * minPad > this.width ||
+        resizedRectHeight + 2 * minPad > this.height
+      ) {
+        resizedRectWidth = tempRectWidth;
+        resizedRectHeight = tempRectHeight;
+        leftResizePad = leftPad;
+        topResizePad = topPad;
+      }
+    }
+    // make background black
+    context.fillStyle = 'black';
+    context.fillRect(0, 0, this.width, this.height);
+    // arguments: source, top left coords to start capture, dimensions of capture,
+    //            top left coord to start paste, dimensions of paste
+    context.drawImage(
+      this.video.nativeElement,
+      this.currentRectLines.left * this.resizeRatio,
+      this.currentRectLines.top * this.resizeRatio,
+      tempRectWidth * this.resizeRatio,
+      tempRectHeight * this.resizeRatio,
+      leftResizePad,
+      topResizePad,
+      resizedRectWidth,
+      resizedRectHeight
+    );
+  }
+
+  private drawTintAroundSelection(context: CanvasRenderingContext2D): void {
+    context.globalAlpha = 0.5;
+    context.fillStyle = 'black';
+    // overlay the tint over the whole frame
+    context.fillRect(0, 0, this.width, this.height);
+    // copy selection so it's not tinted
+    context.drawImage(
+      this.video.nativeElement,
+      this.currentRectLines.left * this.resizeRatio,
+      this.currentRectLines.top * this.resizeRatio,
+      (this.currentRectLines.right - this.currentRectLines.left) *
+        this.resizeRatio,
+      (this.currentRectLines.bottom - this.currentRectLines.top) *
+        this.resizeRatio,
+      this.currentRectLines.left,
+      this.currentRectLines.top,
+      this.currentRectLines.right - this.currentRectLines.left,
+      this.currentRectLines.bottom - this.currentRectLines.top
+    );
+    // reset global alpha
+    context.globalAlpha = 1;
+  }
+
+  //
+  // Note: Math.floor is needed to prevent weird gaps
+  //        due to pixels being whole numbers.
+  //
+
+  private drawSelectionMainRectangles(
+    context: CanvasRenderingContext2D,
+    primaryStroke: string,
+    secondaryStroke: string,
+    primaryWidth: number,
+    secondaryWidth: number
+  ): void {
+    const heightThird =
+      (this.currentRectLines.bottom - this.currentRectLines.top) / 3;
+    const widthThird =
+      (this.currentRectLines.right - this.currentRectLines.left) / 3;
+    context.strokeStyle = primaryStroke;
+    // main rect
+    context.beginPath();
+    context.rect(
+      Math.floor(this.currentRectLines.left),
+      Math.floor(this.currentRectLines.top),
+      Math.floor(this.currentRectLines.right - this.currentRectLines.left) + 1,
+      Math.floor(this.currentRectLines.bottom - this.currentRectLines.top) + 1
+    );
+    context.lineWidth = primaryWidth;
+    context.stroke();
+    // inner rect 1
+    context.strokeStyle = secondaryStroke;
+    context.beginPath();
+    context.rect(
+      Math.floor(this.currentRectLines.left + widthThird),
+      Math.floor(this.currentRectLines.top),
+      Math.floor(widthThird),
+      Math.floor(this.currentRectLines.bottom - this.currentRectLines.top)
+    );
+    context.lineWidth = secondaryWidth;
+    context.stroke();
+    // inner rect 2
+    context.beginPath();
+    context.rect(
+      Math.floor(this.currentRectLines.left),
+      Math.floor(this.currentRectLines.top + heightThird),
+      Math.floor(this.currentRectLines.right - this.currentRectLines.left),
+      Math.floor(heightThird)
+    );
+    context.lineWidth = secondaryWidth;
+    context.stroke();
+  }
+
+  private drawSelectionCornerRectangles(
+    context: CanvasRenderingContext2D,
+    cornerWidth: number,
+    cornerLength: number,
+    cornerOffset: number,
+    fillStyle: string
+  ): void {
+    context.fillStyle = fillStyle;
+    // top-left corner left rect
+    context.fillRect(
+      Math.floor(this.currentRectLines.left - (cornerWidth + cornerOffset)),
+      Math.floor(this.currentRectLines.top - cornerOffset),
+      cornerWidth,
+      cornerLength
+    );
+    // top-left corner top rect
+    context.fillRect(
+      Math.floor(this.currentRectLines.left - cornerOffset),
+      Math.floor(this.currentRectLines.top - (cornerWidth + cornerOffset)),
+      cornerLength,
+      cornerWidth
+    );
+    // top-right corner right rect
+    context.fillRect(
+      Math.floor(this.currentRectLines.right + cornerOffset),
+      Math.floor(this.currentRectLines.top - cornerOffset),
+      cornerWidth,
+      cornerLength
+    );
+    // top-right corner top rect
+    context.fillRect(
+      Math.floor(this.currentRectLines.right - (cornerLength - cornerOffset)),
+      Math.floor(this.currentRectLines.top - (cornerWidth + cornerOffset)),
+      cornerLength,
+      cornerWidth
+    );
+    // bottom-left corner left rect
+    context.fillRect(
+      Math.floor(this.currentRectLines.left - (cornerWidth + cornerOffset)),
+      Math.floor(this.currentRectLines.bottom - (cornerLength - cornerOffset)),
+      cornerWidth,
+      cornerLength
+    );
+    // bottom-left corner bottom rect
+    context.fillRect(
+      Math.floor(this.currentRectLines.left - cornerOffset),
+      Math.floor(this.currentRectLines.bottom + cornerOffset),
+      cornerLength,
+      cornerWidth
+    );
+    // bottom-right corner right rect
+    context.fillRect(
+      Math.floor(this.currentRectLines.right + cornerOffset),
+      Math.floor(this.currentRectLines.bottom - (cornerLength - cornerOffset)),
+      cornerWidth,
+      cornerLength
+    );
+    // bottom-right corner bottom rect
+    context.fillRect(
+      Math.floor(this.currentRectLines.right - (cornerLength - cornerOffset)),
+      Math.floor(this.currentRectLines.bottom + cornerOffset),
+      cornerLength,
+      cornerWidth
+    );
+  }
+
+  private drawSelectionCornerTriangles(
+    context: CanvasRenderingContext2D,
+    cornerWidth: number,
+    cornerLength: number,
+    cornerOffset: number,
+    fillStyle: string
+  ): void {
+    context.fillStyle = fillStyle;
+    // top-left left triangle
+    context.beginPath();
+    context.moveTo(
+      Math.floor(this.currentRectLines.left - (cornerWidth + cornerOffset)),
+      Math.floor(this.currentRectLines.top + (cornerLength - cornerOffset))
+    );
+    context.lineTo(
+      Math.floor(this.currentRectLines.left - cornerOffset),
+      Math.floor(this.currentRectLines.top + (cornerLength - cornerOffset))
+    );
+    context.lineTo(
+      Math.floor(this.currentRectLines.left - cornerOffset),
+      Math.floor(
+        this.currentRectLines.top + (cornerLength + cornerOffset + cornerOffset)
+      )
+    );
+    context.closePath();
+    context.fill();
+    // top-left middle triangle
+    context.beginPath();
+    context.moveTo(
+      Math.floor(this.currentRectLines.left - (cornerWidth + cornerOffset)),
+      Math.floor(this.currentRectLines.top - cornerOffset)
+    );
+    context.lineTo(
+      Math.floor(this.currentRectLines.left - cornerOffset),
+      Math.floor(this.currentRectLines.top - (cornerWidth + cornerOffset))
+    );
+    context.lineTo(
+      Math.floor(this.currentRectLines.left - cornerOffset),
+      Math.floor(this.currentRectLines.top - cornerOffset)
+    );
+    context.closePath();
+    context.fill();
+    // top-left top triangle
+    context.beginPath();
+    context.moveTo(
+      Math.floor(this.currentRectLines.left + (cornerLength - cornerOffset)),
+      Math.floor(this.currentRectLines.top - (cornerWidth + cornerOffset))
+    );
+    context.lineTo(
+      Math.floor(this.currentRectLines.left + (cornerLength - cornerOffset)),
+      Math.floor(this.currentRectLines.top - cornerOffset)
+    );
+    context.lineTo(
+      Math.floor(
+        this.currentRectLines.left +
+          (cornerLength + cornerOffset + cornerOffset)
+      ),
+      Math.floor(this.currentRectLines.top - cornerOffset)
+    );
+    context.closePath();
+    context.fill();
+    // top-right right triangle
+    context.beginPath();
+    context.moveTo(
+      Math.floor(this.currentRectLines.right + (cornerWidth + cornerOffset)),
+      Math.floor(this.currentRectLines.top + (cornerLength - cornerOffset))
+    );
+    context.lineTo(
+      Math.floor(this.currentRectLines.right + cornerOffset),
+      Math.floor(this.currentRectLines.top + (cornerLength - cornerOffset))
+    );
+    context.lineTo(
+      Math.floor(this.currentRectLines.right + cornerOffset),
+      Math.floor(
+        this.currentRectLines.top + (cornerLength + cornerOffset + cornerOffset)
+      )
+    );
+    context.closePath();
+    context.fill();
+    // top-right middle triangle
+    context.beginPath();
+    context.moveTo(
+      Math.floor(this.currentRectLines.right + (cornerWidth + cornerOffset)),
+      Math.floor(this.currentRectLines.top - cornerOffset)
+    );
+    context.lineTo(
+      Math.floor(this.currentRectLines.right + cornerOffset),
+      Math.floor(this.currentRectLines.top - (cornerWidth + cornerOffset))
+    );
+    context.lineTo(
+      Math.floor(this.currentRectLines.right + cornerOffset),
+      Math.floor(this.currentRectLines.top - cornerOffset)
+    );
+    context.closePath();
+    context.fill();
+    // top-right top triangle
+    context.beginPath();
+    context.moveTo(
+      Math.floor(this.currentRectLines.right - (cornerLength - cornerOffset)),
+      Math.floor(this.currentRectLines.top - (cornerWidth + cornerOffset))
+    );
+    context.lineTo(
+      Math.floor(this.currentRectLines.right - (cornerLength - cornerOffset)),
+      Math.floor(this.currentRectLines.top - cornerOffset)
+    );
+    context.lineTo(
+      Math.floor(
+        this.currentRectLines.right -
+          (cornerLength + cornerOffset + cornerOffset)
+      ),
+      Math.floor(this.currentRectLines.top - cornerOffset)
+    );
+    context.closePath();
+    context.fill();
+    // bottom-left left triangle
+    context.beginPath();
+    context.moveTo(
+      Math.floor(this.currentRectLines.left - (cornerWidth + cornerOffset)),
+      Math.floor(this.currentRectLines.bottom - (cornerLength - cornerOffset))
+    );
+    context.lineTo(
+      Math.floor(this.currentRectLines.left - cornerOffset),
+      Math.floor(this.currentRectLines.bottom - (cornerLength - cornerOffset))
+    );
+    context.lineTo(
+      Math.floor(this.currentRectLines.left - cornerOffset),
+      Math.floor(
+        this.currentRectLines.bottom -
+          (cornerLength + cornerOffset + cornerOffset)
+      )
+    );
+    context.closePath();
+    context.fill();
+    // bottom-left middle triangle
+    context.beginPath();
+    context.moveTo(
+      Math.floor(this.currentRectLines.left - (cornerWidth + cornerOffset)),
+      Math.floor(this.currentRectLines.bottom + cornerOffset)
+    );
+    context.lineTo(
+      Math.floor(this.currentRectLines.left - cornerOffset),
+      Math.floor(this.currentRectLines.bottom + (cornerWidth + cornerOffset))
+    );
+    context.lineTo(
+      Math.floor(this.currentRectLines.left - cornerOffset),
+      Math.floor(this.currentRectLines.bottom + cornerOffset)
+    );
+    context.closePath();
+    context.fill();
+    // bottom-left bottom triangle
+    context.beginPath();
+    context.moveTo(
+      Math.floor(this.currentRectLines.left + (cornerLength - cornerOffset)),
+      Math.floor(this.currentRectLines.bottom + (cornerWidth + cornerOffset))
+    );
+    context.lineTo(
+      Math.floor(this.currentRectLines.left + (cornerLength - cornerOffset)),
+      Math.floor(this.currentRectLines.bottom + cornerOffset)
+    );
+    context.lineTo(
+      Math.floor(
+        this.currentRectLines.left +
+          (cornerLength + cornerOffset + cornerOffset)
+      ),
+      Math.floor(this.currentRectLines.bottom + cornerOffset)
+    );
+    context.closePath();
+    context.fill();
+    // bottom-right right triangle
+    context.beginPath();
+    context.moveTo(
+      Math.floor(this.currentRectLines.right + (cornerWidth + cornerOffset)),
+      Math.floor(this.currentRectLines.bottom - (cornerLength - cornerOffset))
+    );
+    context.lineTo(
+      Math.floor(this.currentRectLines.right + cornerOffset),
+      Math.floor(this.currentRectLines.bottom - (cornerLength - cornerOffset))
+    );
+    context.lineTo(
+      Math.floor(this.currentRectLines.right + cornerOffset),
+      Math.floor(
+        this.currentRectLines.bottom -
+          (cornerLength + cornerOffset + cornerOffset)
+      )
+    );
+    context.closePath();
+    context.fill();
+    // bottom-right middle triangle
+    context.beginPath();
+    context.moveTo(
+      Math.floor(this.currentRectLines.right + (cornerWidth + cornerOffset)),
+      Math.floor(this.currentRectLines.bottom + cornerOffset)
+    );
+    context.lineTo(
+      Math.floor(this.currentRectLines.right + cornerOffset),
+      Math.floor(this.currentRectLines.bottom + (cornerWidth + cornerOffset))
+    );
+    context.lineTo(
+      Math.floor(this.currentRectLines.right + cornerOffset),
+      Math.floor(this.currentRectLines.bottom + cornerOffset)
+    );
+    context.closePath();
+    context.fill();
+    // bottom-right bottom triangle
+    context.beginPath();
+    context.moveTo(
+      Math.floor(this.currentRectLines.right - (cornerLength - cornerOffset)),
+      Math.floor(this.currentRectLines.bottom + (cornerWidth + cornerOffset))
+    );
+    context.lineTo(
+      Math.floor(this.currentRectLines.right - (cornerLength - cornerOffset)),
+      Math.floor(this.currentRectLines.bottom + cornerOffset)
+    );
+    context.lineTo(
+      Math.floor(
+        this.currentRectLines.right -
+          (cornerLength + cornerOffset + cornerOffset)
+      ),
+      Math.floor(this.currentRectLines.bottom + cornerOffset)
+    );
+    context.closePath();
+    context.fill();
   }
 }
