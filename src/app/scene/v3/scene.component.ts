@@ -21,11 +21,11 @@ export class SceneV3Component implements OnInit, AfterViewInit {
   resizeRatio = 1;
 
   sceneStages: SceneStage[] = [
-    { id: SCENE_STAGE.PAUSED, name: 'Paused', frames: 0 },
-    { id: SCENE_STAGE.FIRST_MOVE, name: 'FirstMove', frames: 50 },
-    { id: SCENE_STAGE.SECOND_MOVE, name: 'SecondMove', frames: 50 },
-    { id: SCENE_STAGE.THIRD_MOVE, name: 'ThirdMove', frames: 50 },
-    { id: SCENE_STAGE.DISPLAY, name: 'Display', frames: 200 },
+    { id: SCENE_STAGE.PAUSED, name: 'Paused', frames: 0, millis: 0 },
+    { id: SCENE_STAGE.FIRST_MOVE, name: 'FirstMove', frames: 50, millis: 0 },
+    { id: SCENE_STAGE.SECOND_MOVE, name: 'SecondMove', frames: 50, millis: 0 },
+    { id: SCENE_STAGE.THIRD_MOVE, name: 'ThirdMove', frames: 50, millis: 0 },
+    { id: SCENE_STAGE.DISPLAY, name: 'Display', frames: 200, millis: 0 },
   ];
   currentStage = SCENE_STAGE.PAUSED;
   remainingStageFrames = 0;

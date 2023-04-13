@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import { SceneRectLines, SceneStage, SCENE_STAGE } from '../types';
 import { WebGLService } from './services/web-gl.service';
+import { min } from 'rxjs';
 
 @Component({
   selector: 'app-scene',
@@ -20,18 +21,22 @@ export class SceneComponent implements OnInit, AfterViewInit {
   height = 405;
   resizeRatio = 1;
 
-  sceneStages: SceneStage[] = [
-    { id: SCENE_STAGE.PAUSED, name: 'Paused', frames: 0 },
-    { id: SCENE_STAGE.FIRST_MOVE, name: 'FirstMove', frames: 50 },
-    { id: SCENE_STAGE.SECOND_MOVE, name: 'SecondMove', frames: 50 },
-    { id: SCENE_STAGE.THIRD_MOVE, name: 'ThirdMove', frames: 50 },
-    { id: SCENE_STAGE.DISPLAY, name: 'Display', frames: 200 },
+  sceneStages: SceneStage[] = [ // future work: add stages for pauses becure and after display stage
+    { id: SCENE_STAGE.PAUSED, name: 'Paused', frames: 0, millis: 0 },
+    { id: SCENE_STAGE.FIRST_MOVE, name: 'FirstMove', frames: 50, millis: 166 },
+    { id: SCENE_STAGE.SECOND_MOVE, name: 'SecondMove', frames: 50, millis: 166 },
+    { id: SCENE_STAGE.THIRD_MOVE, name: 'ThirdMove', frames: 50, millis: 166 },
+    { id: SCENE_STAGE.DISPLAY, name: 'Display', frames: 200, millis: 500 },
   ];
   currentStage = SCENE_STAGE.PAUSED;
   remainingStageFrames = 0;
   currentRectLines: SceneRectLines = { top: 0, right: 0, bottom: 0, left: 0 };
   targetRectLines: SceneRectLines = { top: 0, right: 0, bottom: 0, left: 0 };
   rectSpeed = 1; // Pixels to move every frame
+  maxMovement = 100;
+  minMovement = 50;
+  heightMin = 100;
+  widthMin = 100;
 
   public captures: Array<any>;
 
@@ -84,21 +89,19 @@ export class SceneComponent implements OnInit, AfterViewInit {
   private getNewTargetRect(): SceneRectLines {
     let tempReturn = { top: 0, right: 0, bottom: 0, left: 0 };
 
-    const originY = Math.random() * (this.height - 200) + 100;
-    const originX = Math.random() * (this.width - 200) + 100;
+    const originY = Math.random() * (this.height - (2 * this.heightMin)) + this.heightMin;
+    const originX = Math.random() * (this.width - (2 * this.widthMin)) + this.widthMin;
 
     const originTopGap = originY;
     const originRightGap = this.width - originX;
     const originBottomGap = this.height - originY;
     const originLeftGap = originX;
 
-    const heightMin = 100;
     const heightMax = Math.min(originTopGap, originBottomGap);
-    const widthMin = 100;
     const widthMax = Math.min(originRightGap, originLeftGap);
 
-    const rectHeight = Math.random() * (heightMax - heightMin) + heightMin;
-    const rectWidth = Math.random() * (widthMax - widthMin) + widthMin;
+    const rectHeight = Math.random() * (heightMax - this.heightMin) + this.heightMin;
+    const rectWidth = Math.random() * (widthMax - this.widthMin) + this.widthMin;
 
     tempReturn.top = originY - rectHeight / 2;
     tempReturn.right = originX + rectWidth / 2;
@@ -117,6 +120,7 @@ export class SceneComponent implements OnInit, AfterViewInit {
       const newOrigin = this.getNewTargetRect();
       // 50:50 to move origin on the x or y axis
       if (Math.random() < 0.5) {
+        // move on the x axis
         const movedPixels = Math.max(
           Math.abs(newOrigin.right - current.right),
           Math.abs(newOrigin.left - current.left)
@@ -131,6 +135,7 @@ export class SceneComponent implements OnInit, AfterViewInit {
           movedPixels,
         };
       } else {
+        // move on y axis
         const movedPixels = Math.max(
           Math.abs(newOrigin.top - current.top),
           Math.abs(newOrigin.bottom - current.bottom)
@@ -153,30 +158,27 @@ export class SceneComponent implements OnInit, AfterViewInit {
       const originBottomGap = this.height - tempReturn.rect.bottom;
       const originLeftGap = tempReturn.rect.left;
 
-      const heightMin = 100;
-      const widthMin = 100;
       const currentHeight = tempReturn.rect.bottom - tempReturn.rect.top;
       const currentWidth = tempReturn.rect.right - tempReturn.rect.left;
 
       let isPicking = true;
-      const maxMovement = 50;
 
       while (isPicking) {
         const randomPick = Math.floor(Math.random() * 4);
         switch (randomPick) {
           // top line
           case 0:
-            if (originTopGap >= maxMovement) {
+            if (originTopGap >= this.maxMovement) {
               // if we could move up
               isPicking = false;
-              tempReturn.rect.top -= Math.ceil(Math.random() * 40) + 10;
+              tempReturn.rect.top -= Math.ceil(Math.random() * (this.maxMovement - this.minMovement)) + this.minMovement;
               tempReturn.movedPixels = Math.abs(
                 tempReturn.rect.top - current.top
               );
-            } else if (currentHeight > heightMin + maxMovement) {
+            } else if (currentHeight > this.heightMin + this.maxMovement) {
               // if we could move down
               isPicking = false;
-              tempReturn.rect.top += Math.ceil(Math.random() * 40) + 10;
+              tempReturn.rect.top += Math.ceil(Math.random() * (this.maxMovement - this.minMovement)) + this.minMovement;
               tempReturn.movedPixels = Math.abs(
                 tempReturn.rect.top - current.top
               );
@@ -184,17 +186,17 @@ export class SceneComponent implements OnInit, AfterViewInit {
             break;
           // right line
           case 1:
-            if (originRightGap >= maxMovement) {
+            if (originRightGap >= this.maxMovement) {
               // if we could move right
               isPicking = false;
-              tempReturn.rect.right += Math.ceil(Math.random() * 40) + 10;
+              tempReturn.rect.right += Math.ceil(Math.random() * (this.maxMovement - this.minMovement)) + this.minMovement;
               tempReturn.movedPixels = Math.abs(
                 tempReturn.rect.right - current.right
               );
-            } else if (currentWidth > widthMin + maxMovement) {
+            } else if (currentWidth > this.widthMin + this.maxMovement) {
               // if we could move left
               isPicking = false;
-              tempReturn.rect.right -= Math.ceil(Math.random() * 40) + 10;
+              tempReturn.rect.right -= Math.ceil(Math.random() * (this.maxMovement - this.minMovement)) + this.minMovement;
               tempReturn.movedPixels = Math.abs(
                 tempReturn.rect.right - current.right
               );
@@ -202,17 +204,17 @@ export class SceneComponent implements OnInit, AfterViewInit {
             break;
           // bottom line
           case 2:
-            if (originBottomGap >= maxMovement) {
+            if (originBottomGap >= this.maxMovement) {
               // if we could move down
               isPicking = false;
-              tempReturn.rect.bottom += Math.ceil(Math.random() * 40) + 10;
+              tempReturn.rect.bottom += Math.ceil(Math.random() * (this.maxMovement - this.minMovement)) + this.minMovement;
               tempReturn.movedPixels = Math.abs(
                 tempReturn.rect.bottom - current.bottom
               );
-            } else if (currentHeight > heightMin + maxMovement) {
+            } else if (currentHeight > this.heightMin + this.maxMovement) {
               // if we could move up
               isPicking = false;
-              tempReturn.rect.bottom -= Math.ceil(Math.random() * 40) + 10;
+              tempReturn.rect.bottom -= Math.ceil(Math.random() * (this.maxMovement - this.minMovement)) + this.minMovement;
               tempReturn.movedPixels = Math.abs(
                 tempReturn.rect.bottom - current.bottom
               );
@@ -220,17 +222,17 @@ export class SceneComponent implements OnInit, AfterViewInit {
             break;
           // left line
           case 3:
-            if (originLeftGap >= maxMovement) {
+            if (originLeftGap >= this.maxMovement) {
               // if we could move left
               isPicking = false;
-              tempReturn.rect.left -= Math.ceil(Math.random() * 40) + 10;
+              tempReturn.rect.left -= Math.ceil(Math.random() * (this.maxMovement - this.minMovement)) + this.minMovement;
               tempReturn.movedPixels = Math.abs(
                 tempReturn.rect.left - current.left
               );
-            } else if (currentWidth > widthMin + maxMovement) {
+            } else if (currentWidth > this.widthMin + this.maxMovement) {
               // if we could move right
               isPicking = false;
-              tempReturn.rect.left += Math.ceil(Math.random() * 40) + 10;
+              tempReturn.rect.left += Math.ceil(Math.random() * (this.maxMovement - this.minMovement)) + this.minMovement;
               tempReturn.movedPixels = Math.abs(
                 tempReturn.rect.left - current.left
               );

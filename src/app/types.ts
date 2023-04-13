@@ -9,7 +9,8 @@ export enum SCENE_STAGE {
 export interface SceneStage {
     id: SCENE_STAGE,
     name: string,
-    frames: number
+    frames: number,
+    millis: number
 }
 
 export interface SceneRectLines {
