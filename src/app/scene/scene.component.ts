@@ -26,6 +26,7 @@ export class SceneComponent implements OnInit, AfterViewInit {
     { id: SCENE_STAGE.FIRST_MOVE, name: 'FirstMove', frames: 50, millis: 166 },
     { id: SCENE_STAGE.SECOND_MOVE, name: 'SecondMove', frames: 50, millis: 166 },
     { id: SCENE_STAGE.THIRD_MOVE, name: 'ThirdMove', frames: 50, millis: 166 },
+    { id: SCENE_STAGE.PRE_DISPLAY, name: 'Pre-display', frames: 50, millis: 166 },
     { id: SCENE_STAGE.DISPLAY, name: 'Display', frames: 200, millis: 500 },
   ];
   currentStage = SCENE_STAGE.PAUSED;
@@ -313,12 +314,14 @@ export class SceneComponent implements OnInit, AfterViewInit {
     return (this.currentStage + 1) % this.sceneStages.length || 1;
   }
 
+  private get isDisplayStage(): boolean {
+    return (this.currentStage === SCENE_STAGE.PRE_DISPLAY)
+      || (this.currentStage === SCENE_STAGE.DISPLAY);
+  }
+
   private computeFrame(): void {
     // If we're still doing the display stage, don't change the picture
-    if (
-      this.currentStage === SCENE_STAGE.DISPLAY &&
-      this.remainingStageFrames > 0
-    ) {
+    if (this.isDisplayStage && this.remainingStageFrames > 0) {
       this.remainingStageFrames -= 1;
       return;
     }
@@ -342,6 +345,11 @@ export class SceneComponent implements OnInit, AfterViewInit {
           this.drawDisplayStage(context);
           return;
         }
+        // if we need to display selection w/o moving
+        if (this.currentStage == SCENE_STAGE.PRE_DISPLAY) {
+          this.drawSelection(context);
+          return;
+        }
         const targetRectObj = this.getMovementTargetRect(this.currentRectLines);
         this.targetRectLines = targetRectObj.rect;
         this.rectSpeed =
@@ -349,40 +357,41 @@ export class SceneComponent implements OnInit, AfterViewInit {
       }
       // Get the next frame
       this.currentRectLines = this.getNextRect();
-      //
-      // Draw current selection
-      //
-      // Tint area not in selection
-      this.drawTintAroundSelection(context);
-      // Draw selection rectangles
-      const mainRectWidth = 2;
-      const secondaryRectWidth = 0.5;
-      this.drawSelectionMainRectangles(
-        context,
-        'white',
-        'white',
-        mainRectWidth,
-        secondaryRectWidth
-      );
-      // Make fancy corners
-      const cornerOffset = mainRectWidth / 2;
-      const cornerWidth = 5;
-      const cornerLength = 20;
-      this.drawSelectionCornerRectangles(
-        context,
-        cornerWidth,
-        cornerLength,
-        cornerOffset,
-        'white'
-      );
-      this.drawSelectionCornerTriangles(
-        context,
-        cornerWidth,
-        cornerLength,
-        cornerOffset,
-        'white'
-      );
+      this.drawSelection(context);
     }
+  }
+
+  private drawSelection(context: CanvasRenderingContext2D): void {
+    // Tint area not in selection
+    this.drawTintAroundSelection(context);
+    // Draw selection rectangles
+    const mainRectWidth = 2;
+    const secondaryRectWidth = 0.5;
+    this.drawSelectionMainRectangles(
+      context,
+      'white',
+      'white',
+      mainRectWidth,
+      secondaryRectWidth
+    );
+    // Make fancy corners
+    const cornerOffset = mainRectWidth / 2;
+    const cornerWidth = 5;
+    const cornerLength = 20;
+    this.drawSelectionCornerRectangles(
+      context,
+      cornerWidth,
+      cornerLength,
+      cornerOffset,
+      'white'
+    );
+    this.drawSelectionCornerTriangles(
+      context,
+      cornerWidth,
+      cornerLength,
+      cornerOffset,
+      'white'
+    );
   }
 
   private drawDisplayStage(context: CanvasRenderingContext2D): void {

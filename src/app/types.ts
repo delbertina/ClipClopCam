@@ -3,7 +3,8 @@ export enum SCENE_STAGE {
     FIRST_MOVE = 1,
     SECOND_MOVE = 2,
     THIRD_MOVE = 3,
-    DISPLAY = 4
+    PRE_DISPLAY = 4,
+    DISPLAY = 5
 }
 
 export interface SceneStage {

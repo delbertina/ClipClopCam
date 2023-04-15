@@ -278,6 +278,8 @@ export class SceneV2Component implements OnInit, AfterViewInit {
       if (this.isRectAtTarget) {
         this.currentStage = this.getNextStage();
         this.remainingStageFrames = this.getCurrentStageObj.frames;
+        // patch for updated stage enum, skip pre-display
+        if (this.currentStage === SCENE_STAGE.PRE_DISPLAY) this.currentStage = SCENE_STAGE.DISPLAY;
         // if the stage changed to paused, don't do anything
         if (this.currentStage === SCENE_STAGE.PAUSED) return;
         if (this.currentStage === SCENE_STAGE.DISPLAY) {
