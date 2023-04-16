@@ -6,8 +6,6 @@ import {
   ViewChild,
 } from '@angular/core';
 import { SceneRectLines, SceneStage, SCENE_STAGE } from '../types';
-import { WebGLService } from './services/web-gl.service';
-import { min } from 'rxjs';
 
 @Component({
   selector: 'app-scene',
@@ -30,7 +28,7 @@ export class SceneComponent implements OnInit, AfterViewInit {
     { id: SCENE_STAGE.DISPLAY, name: 'Display', frames: 200, millis: 500 },
   ];
   currentStage = SCENE_STAGE.PAUSED;
-  remainingStageFrames = 0;
+  currentStageEnd = 0; // timestamp.valueOf() AKA milliseconds since Jan 1st, 1970
   currentRectLines: SceneRectLines = { top: 0, right: 0, bottom: 0, left: 0 };
   targetRectLines: SceneRectLines = { top: 0, right: 0, bottom: 0, left: 0 };
   rectSpeed = 1; // Pixels to move every frame
@@ -39,11 +37,11 @@ export class SceneComponent implements OnInit, AfterViewInit {
   heightMin = 100;
   widthMin = 100;
 
-  public captures: Array<any>;
+  // public captures: Array<any>;
 
-  constructor(private webglService: WebGLService) {
-    this.captures = [];
-  }
+  // constructor(private webglService: WebGLService) {
+  //   this.captures = [];
+  // }
 
   ngOnInit(): void {}
 
@@ -80,7 +78,7 @@ export class SceneComponent implements OnInit, AfterViewInit {
       this.currentStage === SCENE_STAGE.PAUSED
         ? SCENE_STAGE.FIRST_MOVE
         : SCENE_STAGE.PAUSED;
-    this.remainingStageFrames = this.getCurrentStageObj.frames;
+    this.currentStageEnd = Date.now().valueOf() +  this.getCurrentStageObj.millis;
     this.currentRectLines = this.getNewTargetRect();
     const newRectObj = this.getMovementTargetRect(this.currentRectLines);
     this.targetRectLines = newRectObj.rect;
@@ -319,12 +317,13 @@ export class SceneComponent implements OnInit, AfterViewInit {
       || (this.currentStage === SCENE_STAGE.DISPLAY);
   }
 
+  private get isCurrentStageDone(): boolean {
+    return Date.now().valueOf() >= this.currentStageEnd;
+  }
+
   private computeFrame(): void {
     // If we're still doing the display stage, don't change the picture
-    if (this.isDisplayStage && this.remainingStageFrames > 0) {
-      this.remainingStageFrames -= 1;
-      return;
-    }
+    if (this.isDisplayStage && !this.isCurrentStageDone) return;
     // else get our current render and draw on the webcam's current frame
     const context: CanvasRenderingContext2D =
       this.sceneCanvas.nativeElement.getContext('2d');
@@ -332,12 +331,11 @@ export class SceneComponent implements OnInit, AfterViewInit {
 
     // if the rectangle is moving, advance the movement
     if (this.currentStage !== SCENE_STAGE.PAUSED) {
-      this.remainingStageFrames -= 1;
       // if we're done with the current movement
       if (this.isRectAtTarget) {
         // advance to the next stage
         this.currentStage = this.getNextStage();
-        this.remainingStageFrames = this.getCurrentStageObj.frames;
+        this.currentStageEnd = Date.now().valueOf() +  this.getCurrentStageObj.millis
         // if the stage changed to paused, don't do anything
         if (this.currentStage === SCENE_STAGE.PAUSED) return;
         // if we advanced to the display stage do the special render and nothing else
