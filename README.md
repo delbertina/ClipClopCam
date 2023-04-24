@@ -1,6 +1,6 @@
 # ClipClopCam
 
-Tiktok camera game filters for desktop webcams using WebGL 
+Tiktok camera game filters for desktop webcams using WebGL & HTML Canvas
 
 [Try Me](https://delbertina.github.io/ClipClopCam/)
 #

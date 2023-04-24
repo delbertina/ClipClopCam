@@ -433,7 +433,7 @@ export class SceneComponent implements OnInit, AfterViewInit {
       }
     }
     // make background black
-    context.fillStyle = 'black';
+    context.fillStyle = '#dddddd';
     context.fillRect(0, 0, this.width, this.height);
     // arguments: source, top left coords to start capture, dimensions of capture,
     //            top left coord to start paste, dimensions of paste
