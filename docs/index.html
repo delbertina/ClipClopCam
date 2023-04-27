@@ -1,12 +1,27 @@
 <!DOCTYPE html><html lang="en"><head>
-  <meta charset="utf-8">
-  <title>ClipClopCam</title>
-  <base href="https://delbertina.github.io/ClipClopCam/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-<style>html,body{height:99%}</style><link rel="stylesheet" href="styles.3c729a7506353a2c.css" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="styles.3c729a7506353a2c.css"></noscript></head>
-<body>
-  <app-root></app-root>
-<script src="runtime.4c1ca57cc323d928.js" type="module"></script><script src="polyfills.e47e37e35d9244ed.js" type="module"></script><script src="main.4d3b62b6902d243e.js" type="module"></script>
+    <meta charset="utf-8">
+    <title>ClipClopCam</title>
+    <base href="https://delbertina.github.io/ClipClopCam/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <style>html,body{height:99%}</style><link rel="stylesheet" href="styles.3c729a7506353a2c.css" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="styles.3c729a7506353a2c.css"></noscript></head>
+  <body>
+    <!-- Github Pages hack to allow SPA refresh without receiving 404. -->
+    <script>
+      (function () {
+        // Retrieve the URL the user was trying to access when receiving the 404.
+        var redirect = sessionStorage.redirect;
+        // Remove the URL from sessionStorage.
+        delete sessionStorage.redirect;
+        // Check if we actually need to redirect.
+        if (redirect && redirect != location.href) {
+          // We need to redirect to the URL the user was trying to access.
+          history.replaceState(null, null, redirect);
+        }
+      })();
+    </script>
+    <!-- /Github Pages hack. -->
+    <app-root></app-root>
+  <script src="runtime.4c1ca57cc323d928.js" type="module"></script><script src="polyfills.e47e37e35d9244ed.js" type="module"></script><script src="main.4d3b62b6902d243e.js" type="module"></script>
 
 </body></html>
