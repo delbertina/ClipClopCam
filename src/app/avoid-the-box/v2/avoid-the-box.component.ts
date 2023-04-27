@@ -9,11 +9,11 @@ import { SceneStage, SCENE_STAGE, SceneRectLines } from 'src/app/types';
 import { WebGLService } from '../services/web-gl.service';
 
 @Component({
-  selector: 'app-scene-v2',
-  templateUrl: './scene.component.html',
-  styleUrls: ['./scene.component.scss'],
+  selector: 'avoid-the-box-v2',
+  templateUrl: './avoid-the-box.component.html',
+  styleUrls: ['./avoid-the-box.component.scss'],
 })
-export class SceneV2Component implements OnInit, AfterViewInit {
+export class AvoidTheBoxV2Component implements OnInit, AfterViewInit {
   @ViewChild('sceneCanvas') private sceneCanvas: ElementRef;
   @ViewChild('sceneVideo') private video: ElementRef;
   width = 720;

@@ -1,14 +1,14 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from "@angular/router";
-import { SceneComponent } from "./scene/scene.component";
-import { SceneV1Component } from './scene/v1/scene.component';
-import { SceneV2Component } from './scene/v2/scene.component';
-import { SceneV3Component } from './scene/v3/scene.component';
+import { AvoidTheBoxComponent } from './avoid-the-box/avoid-the-box.component';
+import { AvoidTheBoxV1Component } from './avoid-the-box/v1/avoid-the-box.component';
+import { AvoidTheBoxV2Component } from './avoid-the-box/v2/avoid-the-box.component';
+import { AvoidTheBoxV3Component } from './avoid-the-box/v3/avoid-the-box.component';
 const routes: Routes = [
-  { path: "", component: SceneComponent },
-  { path: "v3", component: SceneV3Component },
-  { path: "v2", component: SceneV2Component },
-  { path: "v1", component: SceneV1Component }
+  { path: "", component: AvoidTheBoxComponent },
+  { path: "v3", component: AvoidTheBoxV3Component },
+  { path: "v2", component: AvoidTheBoxV2Component },
+  { path: "v1", component: AvoidTheBoxV1Component }
 ];
 
 @NgModule({

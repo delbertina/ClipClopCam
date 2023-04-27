@@ -8,11 +8,11 @@ import {
 import { SCENE_STAGE, SceneRectLines } from 'src/app/types';
 
 @Component({
-  selector: 'app-scene-v1',
-  templateUrl: './scene.component.html',
-  styleUrls: ['./scene.component.scss'],
+  selector: 'avoid-the-box-v1',
+  templateUrl: './avoid-the-box.component.html',
+  styleUrls: ['./avoid-the-box.component.scss'],
 })
-export class SceneV1Component implements OnInit, AfterViewInit {
+export class AvoidTheBoxV1Component implements OnInit, AfterViewInit {
   @ViewChild('sceneCanvas') private sceneCanvas: ElementRef;
   @ViewChild('sceneVideo') private video: ElementRef;
   width = 720;

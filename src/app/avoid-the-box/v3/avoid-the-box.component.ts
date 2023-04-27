@@ -5,43 +5,39 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { SceneRectLines, SceneStage, SCENE_STAGE } from '../types';
+import { SceneStage, SCENE_STAGE, SceneRectLines } from 'src/app/types';
+import { WebGLService } from '../services/web-gl.service';
 
 @Component({
-  selector: 'app-scene',
-  templateUrl: './scene.component.html',
-  styleUrls: ['./scene.component.scss'],
+  selector: 'avoid-the-box-v3',
+  templateUrl: './avoid-the-box.component.html',
+  styleUrls: ['./avoid-the-box.component.scss'],
 })
-export class SceneComponent implements OnInit, AfterViewInit {
+export class AvoidTheBoxV3Component implements OnInit, AfterViewInit {
   @ViewChild('sceneCanvas') private sceneCanvas: ElementRef;
   @ViewChild('sceneVideo') private video: ElementRef;
   width = 720;
   height = 405;
   resizeRatio = 1;
 
-  sceneStages: SceneStage[] = [ // future work: add stages for pauses becure and after display stage
+  sceneStages: SceneStage[] = [
     { id: SCENE_STAGE.PAUSED, name: 'Paused', frames: 0, millis: 0 },
-    { id: SCENE_STAGE.FIRST_MOVE, name: 'FirstMove', frames: 50, millis: 166 },
-    { id: SCENE_STAGE.SECOND_MOVE, name: 'SecondMove', frames: 50, millis: 166 },
-    { id: SCENE_STAGE.THIRD_MOVE, name: 'ThirdMove', frames: 50, millis: 166 },
-    { id: SCENE_STAGE.PRE_DISPLAY, name: 'Pre-display', frames: 50, millis: 166 },
-    { id: SCENE_STAGE.DISPLAY, name: 'Display', frames: 200, millis: 500 },
+    { id: SCENE_STAGE.FIRST_MOVE, name: 'FirstMove', frames: 50, millis: 0 },
+    { id: SCENE_STAGE.SECOND_MOVE, name: 'SecondMove', frames: 50, millis: 0 },
+    { id: SCENE_STAGE.THIRD_MOVE, name: 'ThirdMove', frames: 50, millis: 0 },
+    { id: SCENE_STAGE.DISPLAY, name: 'Display', frames: 200, millis: 0 },
   ];
   currentStage = SCENE_STAGE.PAUSED;
-  currentStageEnd = 0; // timestamp.valueOf() AKA milliseconds since Jan 1st, 1970
+  remainingStageFrames = 0;
   currentRectLines: SceneRectLines = { top: 0, right: 0, bottom: 0, left: 0 };
   targetRectLines: SceneRectLines = { top: 0, right: 0, bottom: 0, left: 0 };
   rectSpeed = 1; // Pixels to move every frame
-  maxMovement = 100;
-  minMovement = 50;
-  heightMin = 100;
-  widthMin = 100;
 
-  // public captures: Array<any>;
+  public captures: Array<any>;
 
-  // constructor(private webglService: WebGLService) {
-  //   this.captures = [];
-  // }
+  constructor(private webglService: WebGLService) {
+    this.captures = [];
+  }
 
   ngOnInit(): void {}
 
@@ -78,7 +74,7 @@ export class SceneComponent implements OnInit, AfterViewInit {
       this.currentStage === SCENE_STAGE.PAUSED
         ? SCENE_STAGE.FIRST_MOVE
         : SCENE_STAGE.PAUSED;
-    this.currentStageEnd = Date.now().valueOf() +  this.getCurrentStageObj.millis;
+    this.remainingStageFrames = this.getCurrentStageObj.frames;
     this.currentRectLines = this.getNewTargetRect();
     const newRectObj = this.getMovementTargetRect(this.currentRectLines);
     this.targetRectLines = newRectObj.rect;
@@ -88,19 +84,21 @@ export class SceneComponent implements OnInit, AfterViewInit {
   private getNewTargetRect(): SceneRectLines {
     let tempReturn = { top: 0, right: 0, bottom: 0, left: 0 };
 
-    const originY = Math.random() * (this.height - (2 * this.heightMin)) + this.heightMin;
-    const originX = Math.random() * (this.width - (2 * this.widthMin)) + this.widthMin;
+    const originY = Math.random() * (this.height - 200) + 100;
+    const originX = Math.random() * (this.width - 200) + 100;
 
     const originTopGap = originY;
     const originRightGap = this.width - originX;
     const originBottomGap = this.height - originY;
     const originLeftGap = originX;
 
+    const heightMin = 100;
     const heightMax = Math.min(originTopGap, originBottomGap);
+    const widthMin = 100;
     const widthMax = Math.min(originRightGap, originLeftGap);
 
-    const rectHeight = Math.random() * (heightMax - this.heightMin) + this.heightMin;
-    const rectWidth = Math.random() * (widthMax - this.widthMin) + this.widthMin;
+    const rectHeight = Math.random() * (heightMax - heightMin) + heightMin;
+    const rectWidth = Math.random() * (widthMax - widthMin) + widthMin;
 
     tempReturn.top = originY - rectHeight / 2;
     tempReturn.right = originX + rectWidth / 2;
@@ -119,7 +117,6 @@ export class SceneComponent implements OnInit, AfterViewInit {
       const newOrigin = this.getNewTargetRect();
       // 50:50 to move origin on the x or y axis
       if (Math.random() < 0.5) {
-        // move on the x axis
         const movedPixels = Math.max(
           Math.abs(newOrigin.right - current.right),
           Math.abs(newOrigin.left - current.left)
@@ -134,7 +131,6 @@ export class SceneComponent implements OnInit, AfterViewInit {
           movedPixels,
         };
       } else {
-        // move on y axis
         const movedPixels = Math.max(
           Math.abs(newOrigin.top - current.top),
           Math.abs(newOrigin.bottom - current.bottom)
@@ -157,27 +153,30 @@ export class SceneComponent implements OnInit, AfterViewInit {
       const originBottomGap = this.height - tempReturn.rect.bottom;
       const originLeftGap = tempReturn.rect.left;
 
+      const heightMin = 100;
+      const widthMin = 100;
       const currentHeight = tempReturn.rect.bottom - tempReturn.rect.top;
       const currentWidth = tempReturn.rect.right - tempReturn.rect.left;
 
       let isPicking = true;
+      const maxMovement = 50;
 
       while (isPicking) {
         const randomPick = Math.floor(Math.random() * 4);
         switch (randomPick) {
           // top line
           case 0:
-            if (originTopGap >= this.maxMovement) {
+            if (originTopGap >= maxMovement) {
               // if we could move up
               isPicking = false;
-              tempReturn.rect.top -= Math.ceil(Math.random() * (this.maxMovement - this.minMovement)) + this.minMovement;
+              tempReturn.rect.top -= Math.ceil(Math.random() * 40) + 10;
               tempReturn.movedPixels = Math.abs(
                 tempReturn.rect.top - current.top
               );
-            } else if (currentHeight > this.heightMin + this.maxMovement) {
+            } else if (currentHeight > heightMin + maxMovement) {
               // if we could move down
               isPicking = false;
-              tempReturn.rect.top += Math.ceil(Math.random() * (this.maxMovement - this.minMovement)) + this.minMovement;
+              tempReturn.rect.top += Math.ceil(Math.random() * 40) + 10;
               tempReturn.movedPixels = Math.abs(
                 tempReturn.rect.top - current.top
               );
@@ -185,17 +184,17 @@ export class SceneComponent implements OnInit, AfterViewInit {
             break;
           // right line
           case 1:
-            if (originRightGap >= this.maxMovement) {
+            if (originRightGap >= maxMovement) {
               // if we could move right
               isPicking = false;
-              tempReturn.rect.right += Math.ceil(Math.random() * (this.maxMovement - this.minMovement)) + this.minMovement;
+              tempReturn.rect.right += Math.ceil(Math.random() * 40) + 10;
               tempReturn.movedPixels = Math.abs(
                 tempReturn.rect.right - current.right
               );
-            } else if (currentWidth > this.widthMin + this.maxMovement) {
+            } else if (currentWidth > widthMin + maxMovement) {
               // if we could move left
               isPicking = false;
-              tempReturn.rect.right -= Math.ceil(Math.random() * (this.maxMovement - this.minMovement)) + this.minMovement;
+              tempReturn.rect.right -= Math.ceil(Math.random() * 40) + 10;
               tempReturn.movedPixels = Math.abs(
                 tempReturn.rect.right - current.right
               );
@@ -203,17 +202,17 @@ export class SceneComponent implements OnInit, AfterViewInit {
             break;
           // bottom line
           case 2:
-            if (originBottomGap >= this.maxMovement) {
+            if (originBottomGap >= maxMovement) {
               // if we could move down
               isPicking = false;
-              tempReturn.rect.bottom += Math.ceil(Math.random() * (this.maxMovement - this.minMovement)) + this.minMovement;
+              tempReturn.rect.bottom += Math.ceil(Math.random() * 40) + 10;
               tempReturn.movedPixels = Math.abs(
                 tempReturn.rect.bottom - current.bottom
               );
-            } else if (currentHeight > this.heightMin + this.maxMovement) {
+            } else if (currentHeight > heightMin + maxMovement) {
               // if we could move up
               isPicking = false;
-              tempReturn.rect.bottom -= Math.ceil(Math.random() * (this.maxMovement - this.minMovement)) + this.minMovement;
+              tempReturn.rect.bottom -= Math.ceil(Math.random() * 40) + 10;
               tempReturn.movedPixels = Math.abs(
                 tempReturn.rect.bottom - current.bottom
               );
@@ -221,17 +220,17 @@ export class SceneComponent implements OnInit, AfterViewInit {
             break;
           // left line
           case 3:
-            if (originLeftGap >= this.maxMovement) {
+            if (originLeftGap >= maxMovement) {
               // if we could move left
               isPicking = false;
-              tempReturn.rect.left -= Math.ceil(Math.random() * (this.maxMovement - this.minMovement)) + this.minMovement;
+              tempReturn.rect.left -= Math.ceil(Math.random() * 40) + 10;
               tempReturn.movedPixels = Math.abs(
                 tempReturn.rect.left - current.left
               );
-            } else if (currentWidth > this.widthMin + this.maxMovement) {
+            } else if (currentWidth > widthMin + maxMovement) {
               // if we could move right
               isPicking = false;
-              tempReturn.rect.left += Math.ceil(Math.random() * (this.maxMovement - this.minMovement)) + this.minMovement;
+              tempReturn.rect.left += Math.ceil(Math.random() * 40) + 10;
               tempReturn.movedPixels = Math.abs(
                 tempReturn.rect.left - current.left
               );
@@ -312,18 +311,15 @@ export class SceneComponent implements OnInit, AfterViewInit {
     return (this.currentStage + 1) % this.sceneStages.length || 1;
   }
 
-  private get isDisplayStage(): boolean {
-    return (this.currentStage === SCENE_STAGE.PRE_DISPLAY)
-      || (this.currentStage === SCENE_STAGE.DISPLAY);
-  }
-
-  private get isCurrentStageDone(): boolean {
-    return Date.now().valueOf() >= this.currentStageEnd;
-  }
-
   private computeFrame(): void {
     // If we're still doing the display stage, don't change the picture
-    if (this.isDisplayStage && !this.isCurrentStageDone) return;
+    if (
+      this.currentStage === SCENE_STAGE.DISPLAY &&
+      this.remainingStageFrames > 0
+    ) {
+      this.remainingStageFrames -= 1;
+      return;
+    }
     // else get our current render and draw on the webcam's current frame
     const context: CanvasRenderingContext2D =
       this.sceneCanvas.nativeElement.getContext('2d');
@@ -331,21 +327,19 @@ export class SceneComponent implements OnInit, AfterViewInit {
 
     // if the rectangle is moving, advance the movement
     if (this.currentStage !== SCENE_STAGE.PAUSED) {
+      this.remainingStageFrames -= 1;
       // if we're done with the current movement
       if (this.isRectAtTarget) {
         // advance to the next stage
         this.currentStage = this.getNextStage();
-        this.currentStageEnd = Date.now().valueOf() +  this.getCurrentStageObj.millis
+        // patch for updated stage enum, skip pre-display
+        if (this.currentStage === SCENE_STAGE.PRE_DISPLAY) this.currentStage = SCENE_STAGE.DISPLAY;
+        this.remainingStageFrames = this.getCurrentStageObj.frames;
         // if the stage changed to paused, don't do anything
         if (this.currentStage === SCENE_STAGE.PAUSED) return;
         // if we advanced to the display stage do the special render and nothing else
         if (this.currentStage === SCENE_STAGE.DISPLAY) {
           this.drawDisplayStage(context);
-          return;
-        }
-        // if we need to display selection w/o moving
-        if (this.currentStage == SCENE_STAGE.PRE_DISPLAY) {
-          this.drawSelection(context);
           return;
         }
         const targetRectObj = this.getMovementTargetRect(this.currentRectLines);
@@ -355,41 +349,40 @@ export class SceneComponent implements OnInit, AfterViewInit {
       }
       // Get the next frame
       this.currentRectLines = this.getNextRect();
-      this.drawSelection(context);
+      //
+      // Draw current selection
+      //
+      // Tint area not in selection
+      this.drawTintAroundSelection(context);
+      // Draw selection rectangles
+      const mainRectWidth = 2;
+      const secondaryRectWidth = 0.5;
+      this.drawSelectionMainRectangles(
+        context,
+        'white',
+        'white',
+        mainRectWidth,
+        secondaryRectWidth
+      );
+      // Make fancy corners
+      const cornerOffset = mainRectWidth / 2;
+      const cornerWidth = 5;
+      const cornerLength = 20;
+      this.drawSelectionCornerRectangles(
+        context,
+        cornerWidth,
+        cornerLength,
+        cornerOffset,
+        'white'
+      );
+      this.drawSelectionCornerTriangles(
+        context,
+        cornerWidth,
+        cornerLength,
+        cornerOffset,
+        'white'
+      );
     }
-  }
-
-  private drawSelection(context: CanvasRenderingContext2D): void {
-    // Tint area not in selection
-    this.drawTintAroundSelection(context);
-    // Draw selection rectangles
-    const mainRectWidth = 2;
-    const secondaryRectWidth = 0.5;
-    this.drawSelectionMainRectangles(
-      context,
-      'white',
-      'white',
-      mainRectWidth,
-      secondaryRectWidth
-    );
-    // Make fancy corners
-    const cornerOffset = mainRectWidth / 2;
-    const cornerWidth = 5;
-    const cornerLength = 20;
-    this.drawSelectionCornerRectangles(
-      context,
-      cornerWidth,
-      cornerLength,
-      cornerOffset,
-      'white'
-    );
-    this.drawSelectionCornerTriangles(
-      context,
-      cornerWidth,
-      cornerLength,
-      cornerOffset,
-      'white'
-    );
   }
 
   private drawDisplayStage(context: CanvasRenderingContext2D): void {
@@ -433,7 +426,7 @@ export class SceneComponent implements OnInit, AfterViewInit {
       }
     }
     // make background black
-    context.fillStyle = '#dddddd';
+    context.fillStyle = 'black';
     context.fillRect(0, 0, this.width, this.height);
     // arguments: source, top left coords to start capture, dimensions of capture,
     //            top left coord to start paste, dimensions of paste

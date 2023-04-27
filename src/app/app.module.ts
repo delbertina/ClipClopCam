@@ -2,19 +2,19 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
-import { SceneComponent } from './scene/scene.component';
 import { AppRoutingModule } from './app-routing.module';
-import { SceneV1Component } from './scene/v1/scene.component';
-import { SceneV2Component } from './scene/v2/scene.component';
-import { SceneV3Component } from './scene/v3/scene.component';
+import { AvoidTheBoxComponent } from './avoid-the-box/avoid-the-box.component';
+import { AvoidTheBoxV1Component } from './avoid-the-box/v1/avoid-the-box.component';
+import { AvoidTheBoxV2Component } from './avoid-the-box/v2/avoid-the-box.component';
+import { AvoidTheBoxV3Component } from './avoid-the-box/v3/avoid-the-box.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SceneComponent,
-    SceneV1Component,
-    SceneV2Component,
-    SceneV3Component
+    AvoidTheBoxComponent,
+    AvoidTheBoxV1Component,
+    AvoidTheBoxV2Component,
+    AvoidTheBoxV3Component
   ],
   imports: [
     BrowserModule,
