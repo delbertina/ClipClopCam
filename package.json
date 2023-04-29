@@ -5,7 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build:github": "ng build --delete-output-path=false --configuration production --base-href=\"https://delbertina.github.io/ClipClopCam/\" --output-path=\"docs/\"",
+    "build:github": "ng build --configuration production --base-href=\"https://delbertina.github.io/ClipClopCam/\" --output-path=\"docs/\"",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
