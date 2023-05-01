@@ -1,14 +1,11 @@
 <div class="scene">
-  <a routerLink="/"><button>Home</button></a>
-  <div class="row header-row">
-    <a><button disabled><</button></a>
+  <a routerLink="/"><button class="btn btn-dark">Home</button></a>
+  <div class="d-flex justify-content-center header-row">
+    <a><button class="btn btn-dark" disabled><</button></a>
     <h3>Version 4</h3>
-    <a routerLink="/avoid-the-box/v3"><button>></button></a>
+    <a routerLink="/avoid-the-box/v3"><button class="btn btn-dark">></button></a>
   </div>
   <video #sceneVideo id="sceneVideo" width="720" height="405" autoplay></video>
   <canvas #sceneCanvas id="sceneCanvas" width="720" height="405"></canvas>
-  <div><button (click)="toggleMovement()">Toggle</button></div>
-  <div>
-    <h5>{{ getCurrentStageObj | json }}</h5>
-  </div>
+  <div><button class="btn btn-primary" (click)="toggleMovement()">Toggle</button></div>
 </div>

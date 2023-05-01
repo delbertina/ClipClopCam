@@ -7,16 +7,6 @@ import { AvoidTheBoxV3Component } from './avoid-the-box/v3/avoid-the-box.compone
 import { HomeComponent } from './home/home.component';
 const routes: Routes = [
   { path: "", component: HomeComponent },
-  // {
-  //   path: 'avoid-the-box',
-  //   component: AvoidTheBoxComponent,
-  //   children: [
-  //     {path: '', component: AvoidTheBoxComponent},
-  //     {path: 'v3', component: AvoidTheBoxV3Component},
-  //     {path: 'v2', component: AvoidTheBoxV2Component},
-  //     {path: 'v1', component: AvoidTheBoxV1Component}
-  //   ]
-  // },
   { path: "avoid-the-box", component: AvoidTheBoxComponent },
   { path: "avoid-the-box/v3", component: AvoidTheBoxV3Component },
   { path: "avoid-the-box/v2", component: AvoidTheBoxV2Component },
