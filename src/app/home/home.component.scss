@@ -1,0 +1,15 @@
+.home-center-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  height: 100%;
+  gap: 16px;
+  padding-top: 15vh;
+}
+
+.button-justify-right {
+  margin: 0 0 0 auto;
+  width: fit-content;
+  box-sizing: border-box;
+}

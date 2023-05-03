@@ -1,3 +1,64 @@
-<h3>Welcome to Clip Clop Cam</h3>
-<h6>Experiments</h6>
-<a routerLink="/avoid-the-box"><button class="btn btn-outline-primary">Avoid the Box</button></a>
+<div class="home-center-content">
+  <h1>Welcome to Clip Clop Cam</h1>
+  <hr />
+  <h4>Experiments:</h4>
+  <div class="accordion" id="accordionExample">
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button
+          class="accordion-button"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapseOne"
+          aria-expanded="true"
+          aria-controls="collapseOne"
+        >
+          Avoid the Box
+        </button>
+      </h2>
+      <div
+        id="collapseOne"
+        class="accordion-collapse collapse show"
+        data-bs-parent="#accordionExample"
+      >
+        <div class="accordion-body">
+          Does what it says on the tin, attempt to avoid the moving box at all
+          costs!
+          <br />
+          <div class="button-justify-right">
+          <a routerLink="/avoid-the-box"
+            ><button class="btn btn-outline-primary">Try Me</button></a
+          ></div>
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button
+          class="accordion-button"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapseTwo"
+          aria-expanded="true"
+          aria-controls="collapseTwo"
+        >
+          Placeholder
+        </button>
+      </h2>
+      <div
+        id="collapseTwo"
+        class="accordion-collapse collapse show"
+        data-bs-parent="#accordionExample"
+      >
+        <div class="accordion-body">
+          Placeholder for future game
+          <br />
+          <div class="button-justify-right">
+          <a routerLink="/"
+            ><button class="btn btn-outline-primary">Try Me</button></a
+          ></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
