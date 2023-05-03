@@ -13,8 +13,5 @@ body {
 .header-row {
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  > {
-    padding: 8px;
-  }
+  gap: 24px;
 }
