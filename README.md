@@ -2,7 +2,11 @@
 
 Tiktok camera game filters for desktop webcams using Bootstrap, WebGL & HTML Canvas
 
-[Try Me](https://delbertina.github.io/ClipClopCam/)
+Experiments:
+
+- Avoid the Box 
+  - The aim of the game is to not be in the box when it stops so avoid it at all costs!
+  - [Try It](https://delbertina.github.io/ClipClopCam/)
 #
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.1.4.
