@@ -8,6 +8,7 @@ import { AvoidTheBoxV1Component } from './avoid-the-box/v1/avoid-the-box.compone
 import { AvoidTheBoxV2Component } from './avoid-the-box/v2/avoid-the-box.component';
 import { AvoidTheBoxV3Component } from './avoid-the-box/v3/avoid-the-box.component';
 import { HomeComponent } from './home/home.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { HomeComponent } from './home/home.component';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    NgbModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
