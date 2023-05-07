@@ -3,14 +3,18 @@
   <div class="d-flex justify-content-center header-row">
     <a routerLink="/avoid-the-box"><button class="btn btn-dark"><</button></a>
     <h3>Version 3</h3>
-    <a routerLink="/avoid-the-box/v2"><button class="btn btn-dark">></button></a>
+    <a routerLink="/avoid-the-box/v2"
+      ><button class="btn btn-dark">></button></a
+    >
   </div>
   <video #sceneVideo id="sceneVideo" width="720" height="405" autoplay></video>
   <canvas #sceneCanvas id="sceneCanvas" width="720" height="405"></canvas>
-  <div><button class="btn btn-primary" (click)="toggleMovement()">Toggle</button></div>
+  <div>
+    <button class="btn btn-primary" (click)="toggleMovement()">Toggle</button>
+  </div>
   <h5>
     Updated visuals to much more closely match the source material.
-    <br>
+    <br />
     Image in display stage is centered and zoomed to fill frame.
   </h5>
 </div>

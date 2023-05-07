@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class WebGLService {
   private _renderingContext: RenderingContext | null = null;
@@ -9,10 +9,11 @@ export class WebGLService {
     return this._renderingContext as WebGLRenderingContext;
   }
 
-  constructor() { }
+  constructor() {}
 
   initialiseWebGLContext(canvas: HTMLCanvasElement) {
-    this._renderingContext = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    this._renderingContext =
+      canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
     if (!this.gl) {
       alert('Unable to initialize WebGL. Your browser may not support it.');
       return;

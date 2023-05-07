@@ -333,7 +333,8 @@ export class AvoidTheBoxV3Component implements OnInit, AfterViewInit {
         // advance to the next stage
         this.currentStage = this.getNextStage();
         // patch for updated stage enum, skip pre-display
-        if (this.currentStage === SCENE_STAGE.PRE_DISPLAY) this.currentStage = SCENE_STAGE.DISPLAY;
+        if (this.currentStage === SCENE_STAGE.PRE_DISPLAY)
+          this.currentStage = SCENE_STAGE.DISPLAY;
         this.remainingStageFrames = this.getCurrentStageObj.frames;
         // if the stage changed to paused, don't do anything
         if (this.currentStage === SCENE_STAGE.PAUSED) return;

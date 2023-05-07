@@ -1,16 +1,20 @@
 <div class="scene">
   <a routerLink="/"><button class="btn btn-dark">Home</button></a>
   <div class="d-flex justify-content-center header-row">
-    <a routerLink="/avoid-the-box/v2"><button class="btn btn-dark"><</button></a>
+    <a routerLink="/avoid-the-box/v2"
+      ><button class="btn btn-dark"><</button></a
+    >
     <h3>Version 1</h3>
     <a><button class="btn btn-dark" disabled>></button></a>
   </div>
   <video #sceneVideo id="sceneVideo" width="720" height="405" autoplay></video>
   <canvas #sceneCanvas id="sceneCanvas" width="720" height="405"></canvas>
-  <div><button class="btn btn-primary" (click)="toggleMovement()">Toggle</button></div>
+  <div>
+    <button class="btn btn-primary" (click)="toggleMovement()">Toggle</button>
+  </div>
   <h5>
     The square moves, but not quite right.
-    <br>
+    <br />
     No stages, just continuous movement.
   </h5>
 </div>

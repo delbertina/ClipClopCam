@@ -19,12 +19,23 @@ export class AvoidTheBoxComponent implements OnInit, AfterViewInit {
   height = 405;
   resizeRatio = 1;
 
-  sceneStages: SceneStage[] = [ // future work: add stages for pauses becure and after display stage
+  sceneStages: SceneStage[] = [
+    // future work: add stages for pauses becure and after display stage
     { id: SCENE_STAGE.PAUSED, name: 'Paused', frames: 0, millis: 0 },
     { id: SCENE_STAGE.FIRST_MOVE, name: 'FirstMove', frames: 50, millis: 166 },
-    { id: SCENE_STAGE.SECOND_MOVE, name: 'SecondMove', frames: 50, millis: 166 },
+    {
+      id: SCENE_STAGE.SECOND_MOVE,
+      name: 'SecondMove',
+      frames: 50,
+      millis: 166,
+    },
     { id: SCENE_STAGE.THIRD_MOVE, name: 'ThirdMove', frames: 50, millis: 166 },
-    { id: SCENE_STAGE.PRE_DISPLAY, name: 'Pre-display', frames: 50, millis: 166 },
+    {
+      id: SCENE_STAGE.PRE_DISPLAY,
+      name: 'Pre-display',
+      frames: 50,
+      millis: 166,
+    },
     { id: SCENE_STAGE.DISPLAY, name: 'Display', frames: 200, millis: 500 },
   ];
   currentStage = SCENE_STAGE.PAUSED;
@@ -78,7 +89,8 @@ export class AvoidTheBoxComponent implements OnInit, AfterViewInit {
       this.currentStage === SCENE_STAGE.PAUSED
         ? SCENE_STAGE.FIRST_MOVE
         : SCENE_STAGE.PAUSED;
-    this.currentStageEnd = Date.now().valueOf() +  this.getCurrentStageObj.millis;
+    this.currentStageEnd =
+      Date.now().valueOf() + this.getCurrentStageObj.millis;
     this.currentRectLines = this.getNewTargetRect();
     const newRectObj = this.getMovementTargetRect(this.currentRectLines);
     this.targetRectLines = newRectObj.rect;
@@ -88,8 +100,10 @@ export class AvoidTheBoxComponent implements OnInit, AfterViewInit {
   private getNewTargetRect(): SceneRectLines {
     let tempReturn = { top: 0, right: 0, bottom: 0, left: 0 };
 
-    const originY = Math.random() * (this.height - (2 * this.heightMin)) + this.heightMin;
-    const originX = Math.random() * (this.width - (2 * this.widthMin)) + this.widthMin;
+    const originY =
+      Math.random() * (this.height - 2 * this.heightMin) + this.heightMin;
+    const originX =
+      Math.random() * (this.width - 2 * this.widthMin) + this.widthMin;
 
     const originTopGap = originY;
     const originRightGap = this.width - originX;
@@ -99,8 +113,10 @@ export class AvoidTheBoxComponent implements OnInit, AfterViewInit {
     const heightMax = Math.min(originTopGap, originBottomGap);
     const widthMax = Math.min(originRightGap, originLeftGap);
 
-    const rectHeight = Math.random() * (heightMax - this.heightMin) + this.heightMin;
-    const rectWidth = Math.random() * (widthMax - this.widthMin) + this.widthMin;
+    const rectHeight =
+      Math.random() * (heightMax - this.heightMin) + this.heightMin;
+    const rectWidth =
+      Math.random() * (widthMax - this.widthMin) + this.widthMin;
 
     tempReturn.top = originY - rectHeight / 2;
     tempReturn.right = originX + rectWidth / 2;
@@ -170,14 +186,20 @@ export class AvoidTheBoxComponent implements OnInit, AfterViewInit {
             if (originTopGap >= this.maxMovement) {
               // if we could move up
               isPicking = false;
-              tempReturn.rect.top -= Math.ceil(Math.random() * (this.maxMovement - this.minMovement)) + this.minMovement;
+              tempReturn.rect.top -=
+                Math.ceil(
+                  Math.random() * (this.maxMovement - this.minMovement)
+                ) + this.minMovement;
               tempReturn.movedPixels = Math.abs(
                 tempReturn.rect.top - current.top
               );
             } else if (currentHeight > this.heightMin + this.maxMovement) {
               // if we could move down
               isPicking = false;
-              tempReturn.rect.top += Math.ceil(Math.random() * (this.maxMovement - this.minMovement)) + this.minMovement;
+              tempReturn.rect.top +=
+                Math.ceil(
+                  Math.random() * (this.maxMovement - this.minMovement)
+                ) + this.minMovement;
               tempReturn.movedPixels = Math.abs(
                 tempReturn.rect.top - current.top
               );
@@ -188,14 +210,20 @@ export class AvoidTheBoxComponent implements OnInit, AfterViewInit {
             if (originRightGap >= this.maxMovement) {
               // if we could move right
               isPicking = false;
-              tempReturn.rect.right += Math.ceil(Math.random() * (this.maxMovement - this.minMovement)) + this.minMovement;
+              tempReturn.rect.right +=
+                Math.ceil(
+                  Math.random() * (this.maxMovement - this.minMovement)
+                ) + this.minMovement;
               tempReturn.movedPixels = Math.abs(
                 tempReturn.rect.right - current.right
               );
             } else if (currentWidth > this.widthMin + this.maxMovement) {
               // if we could move left
               isPicking = false;
-              tempReturn.rect.right -= Math.ceil(Math.random() * (this.maxMovement - this.minMovement)) + this.minMovement;
+              tempReturn.rect.right -=
+                Math.ceil(
+                  Math.random() * (this.maxMovement - this.minMovement)
+                ) + this.minMovement;
               tempReturn.movedPixels = Math.abs(
                 tempReturn.rect.right - current.right
               );
@@ -206,14 +234,20 @@ export class AvoidTheBoxComponent implements OnInit, AfterViewInit {
             if (originBottomGap >= this.maxMovement) {
               // if we could move down
               isPicking = false;
-              tempReturn.rect.bottom += Math.ceil(Math.random() * (this.maxMovement - this.minMovement)) + this.minMovement;
+              tempReturn.rect.bottom +=
+                Math.ceil(
+                  Math.random() * (this.maxMovement - this.minMovement)
+                ) + this.minMovement;
               tempReturn.movedPixels = Math.abs(
                 tempReturn.rect.bottom - current.bottom
               );
             } else if (currentHeight > this.heightMin + this.maxMovement) {
               // if we could move up
               isPicking = false;
-              tempReturn.rect.bottom -= Math.ceil(Math.random() * (this.maxMovement - this.minMovement)) + this.minMovement;
+              tempReturn.rect.bottom -=
+                Math.ceil(
+                  Math.random() * (this.maxMovement - this.minMovement)
+                ) + this.minMovement;
               tempReturn.movedPixels = Math.abs(
                 tempReturn.rect.bottom - current.bottom
               );
@@ -224,14 +258,20 @@ export class AvoidTheBoxComponent implements OnInit, AfterViewInit {
             if (originLeftGap >= this.maxMovement) {
               // if we could move left
               isPicking = false;
-              tempReturn.rect.left -= Math.ceil(Math.random() * (this.maxMovement - this.minMovement)) + this.minMovement;
+              tempReturn.rect.left -=
+                Math.ceil(
+                  Math.random() * (this.maxMovement - this.minMovement)
+                ) + this.minMovement;
               tempReturn.movedPixels = Math.abs(
                 tempReturn.rect.left - current.left
               );
             } else if (currentWidth > this.widthMin + this.maxMovement) {
               // if we could move right
               isPicking = false;
-              tempReturn.rect.left += Math.ceil(Math.random() * (this.maxMovement - this.minMovement)) + this.minMovement;
+              tempReturn.rect.left +=
+                Math.ceil(
+                  Math.random() * (this.maxMovement - this.minMovement)
+                ) + this.minMovement;
               tempReturn.movedPixels = Math.abs(
                 tempReturn.rect.left - current.left
               );
@@ -313,8 +353,10 @@ export class AvoidTheBoxComponent implements OnInit, AfterViewInit {
   }
 
   private get isDisplayStage(): boolean {
-    return (this.currentStage === SCENE_STAGE.PRE_DISPLAY)
-      || (this.currentStage === SCENE_STAGE.DISPLAY);
+    return (
+      this.currentStage === SCENE_STAGE.PRE_DISPLAY ||
+      this.currentStage === SCENE_STAGE.DISPLAY
+    );
   }
 
   private get isCurrentStageDone(): boolean {
@@ -335,7 +377,8 @@ export class AvoidTheBoxComponent implements OnInit, AfterViewInit {
       if (this.isRectAtTarget) {
         // advance to the next stage
         this.currentStage = this.getNextStage();
-        this.currentStageEnd = Date.now().valueOf() +  this.getCurrentStageObj.millis
+        this.currentStageEnd =
+          Date.now().valueOf() + this.getCurrentStageObj.millis;
         // if the stage changed to paused, don't do anything
         if (this.currentStage === SCENE_STAGE.PAUSED) return;
         // if we advanced to the display stage do the special render and nothing else

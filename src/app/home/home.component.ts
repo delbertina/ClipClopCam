@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
+import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'home-component',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  imports: [NgbTooltipModule],
+  styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent {
-
-}
+export class HomeComponent {}

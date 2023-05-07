@@ -17,14 +17,10 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     AvoidTheBoxComponent,
     AvoidTheBoxV1Component,
     AvoidTheBoxV2Component,
-    AvoidTheBoxV3Component
+    AvoidTheBoxV3Component,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    NgbModule,
-  ],
+  imports: [BrowserModule, AppRoutingModule, NgbModule],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

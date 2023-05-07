@@ -19,14 +19,13 @@ export class AvoidTheBoxV1Component implements OnInit, AfterViewInit {
   height = 405;
 
   currentStage = SCENE_STAGE.PAUSED;
-  currentRectLines: SceneRectLines = {top: 0, right: 0, bottom: 0, left: 0};
-  targetRectLines: SceneRectLines = {top: 0, right: 0, bottom: 0, left: 0};
+  currentRectLines: SceneRectLines = { top: 0, right: 0, bottom: 0, left: 0 };
+  targetRectLines: SceneRectLines = { top: 0, right: 0, bottom: 0, left: 0 };
   rectSpeed = 1; // Pixels to move every frame
 
   public captures: Array<any>;
 
-  constructor() {
-  }
+  constructor() {}
 
   ngOnInit(): void {}
 
@@ -55,13 +54,16 @@ export class AvoidTheBoxV1Component implements OnInit, AfterViewInit {
   }
 
   toggleMovement() {
-    this.currentStage = this.currentStage === SCENE_STAGE.PAUSED ? SCENE_STAGE.FIRST_MOVE : SCENE_STAGE.PAUSED;
-    this.currentRectLines = {top: 0, right: 0, bottom: 0, left: 0};
-    this.targetRectLines = {top: 0, right: 0, bottom: 0, left: 0};
+    this.currentStage =
+      this.currentStage === SCENE_STAGE.PAUSED
+        ? SCENE_STAGE.FIRST_MOVE
+        : SCENE_STAGE.PAUSED;
+    this.currentRectLines = { top: 0, right: 0, bottom: 0, left: 0 };
+    this.targetRectLines = { top: 0, right: 0, bottom: 0, left: 0 };
   }
 
   getNewTargetRect(): SceneRectLines {
-    let tempReturn = {top: 0, right: 0, bottom: 0, left: 0};
+    let tempReturn = { top: 0, right: 0, bottom: 0, left: 0 };
 
     const originY = Math.random() * (this.height - 100) + 50;
     const originX = Math.random() * (this.width - 100) + 50;
@@ -88,11 +90,13 @@ export class AvoidTheBoxV1Component implements OnInit, AfterViewInit {
   }
 
   getNextRect(): SceneRectLines {
-    let tempReturn = {top: 0, right: 0, bottom: 0, left: 0};
+    let tempReturn = { top: 0, right: 0, bottom: 0, left: 0 };
 
     const moveToDoTop = this.targetRectLines.top - this.currentRectLines.top;
-    const moveToDoRight = this.targetRectLines.right - this.currentRectLines.right;
-    const moveToDoBottom = this.targetRectLines.bottom - this.currentRectLines.bottom;
+    const moveToDoRight =
+      this.targetRectLines.right - this.currentRectLines.right;
+    const moveToDoBottom =
+      this.targetRectLines.bottom - this.currentRectLines.bottom;
     const moveToDoLeft = this.targetRectLines.left - this.currentRectLines.left;
 
     const moveTop =
