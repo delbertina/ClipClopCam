@@ -6,8 +6,10 @@ Experiments:
 
 - Avoid the Box 
   - The aim of the game is to not be in the box when it stops so avoid it at all costs!
-  - [Try It](https://delbertina.github.io/ClipClopCam/)
-#
+  - [>>> Try It <<<](https://delbertina.github.io/ClipClopCam/)
+
+![image](https://github.com/delbertina/ClipClopCam/assets/6349928/90df612e-162c-4e9d-a747-c677eac330f6)
+
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.1.4.
 
